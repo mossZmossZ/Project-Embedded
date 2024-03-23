@@ -62,16 +62,16 @@ async def read_rfid(request: RFID):
         cursor.execute("SELECT student_id FROM Students WHERE rfid_tags = ?", (rfid_id,))
         student_result = cursor.fetchone()
         if student_result:
-            return {"message": "RFID found in Students table"}
+            return {"Students"}
 
         # Check if rfid_no exists in Items table
         cursor.execute("SELECT item_id FROM Items WHERE rfid_tags = ?", (rfid_id,))
         item_result = cursor.fetchone()
 
         if item_result:
-            return {"message": "RFID found in Items table"}
+            return {"Items"}
 
-        return {"message": "RFID not found in Students or Items table"}
+        return {"notfound"}
     except Error as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
     finally:
