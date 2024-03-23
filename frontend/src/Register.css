@@ -1,0 +1,4 @@
+#registerform{
+    display: flex;
+    flex-direction: column; 
+}

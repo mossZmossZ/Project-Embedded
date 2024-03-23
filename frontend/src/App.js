@@ -1,8 +1,9 @@
-import './App.css';
 import { AgGridReact } from 'ag-grid-react'; // AG Grid Component
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the grid
 import { useState } from 'react';
+import Sidebar from './Components/Sidebar.js'
+import "./App.css";
 
 function App() {
     const [rowData, setRowData] = useState([
@@ -20,18 +21,23 @@ function App() {
       { field: "Borrowed_by" ,flex: 2},
       { field: "Return_date" ,flex: 1}
     ]);
+
+
   return (
-    <div  style={{padding:'10%'}}>
-      Item Status
-      <div className="ag-theme-quartz"   // applying the grid theme
-    style={{ height: 250 }} // the grid will fill the size of the parent container 
-    >
-   <AgGridReact
-       rowData={rowData}
-       columnDefs={colDefs}
-   />
-</div>
+  <div >
+    <div id = 'dashboard'>
+      <Sidebar/>
+
+    
+    <div  className = 'table'>
+        <h3>Item Status</h3>
+        <div className="ag-theme-quartz" style={{height: 250 }}>
+          <AgGridReact rowData={rowData} columnDefs={colDefs}/>
+        </div>
     </div>
+    </div>
+  </div>
+
 
   );
 }
