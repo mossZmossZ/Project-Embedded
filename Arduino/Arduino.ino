@@ -3,6 +3,7 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <WiFi.h> // Use WiFi.h library for ESP32 or ESP8266
+#include <ArduinoJson.h>
 
 const char* ssid = "NATTAVEE_2.4G"; // Change to your WiFi SSID
 const char* password = "PBY02556"; // Change to your WiFi password
@@ -141,6 +142,11 @@ void sendRFIDData(String rfidData) {
 
       Serial.println("Data sent to server");
 
+      // Send the HTTP request
+      client.print(httpRequest);
+
+      Serial.println("Data sent to server");
+
       // Wait for response from the server
       bool bodyStarted = false;
       String responseBody = "";
@@ -157,14 +163,21 @@ void sendRFIDData(String rfidData) {
 
       client.stop(); // Close the connection
 
-      // Print the extracted text from the response
-      int startIndex = responseBody.indexOf('"') + 1;
-      int endIndex = responseBody.lastIndexOf('"');
-      String extractedText = responseBody.substring(startIndex, endIndex);
-      Serial.println(extractedText);
+      // Parse the JSON response
+      DynamicJsonDocument doc(1024);
+      deserializeJson(doc, responseBody);
+
+      // Extract the fields from the JSON response
+      String name = doc[0][0];
+      String role = doc[0][1];
+
+      // Print the extracted fields
+      Serial.print(name);
+      Serial.print(", ");
+      Serial.println(role);
       lcd.clear();
       lcd.setCursor(0, 0); // ไปที่ตัวอักษรที่ 0 แถวที่ 1
-      lcd.print(extractedText);
+      lcd.print(name);
       Serial.println("Response received");
     } else {
       Serial.println("Connection to server failed");

@@ -63,14 +63,14 @@ async def read_rfid(request: RFID):
         cursor.execute("SELECT student_name FROM Students WHERE rfid_tags = ?", (rfid_id,))
         student_result = cursor.fetchone()
         if student_result:
-            return student_result
+            return student_result,"Student"
 
         # Check if rfid_no exists in Items table
         cursor.execute("SELECT item_name FROM Items WHERE rfid_tags = ?", (rfid_id,))
         item_result = cursor.fetchone()
 
         if item_result:
-            return item_result
+            return item_result,"Items"
         else:
             global lastRFID
             lastRFID = rfid_id 
