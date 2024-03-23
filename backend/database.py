@@ -29,9 +29,12 @@ c.execute("""CREATE TABLE IF NOT EXISTS Borrow(
 borrowed_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 return_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d %H:%M:%S')
 # c.execute("INSERT INTO Borrow (item_id, student_id, borrowed_date, return_date) VALUES (2, 6401012630086, ?, ?)", (borrowed_date, return_date))
-c.execute('''UPDATE Students
-SET rfid_tags = 21116517426
-WHERE student_id = 6401012630086''')
+# c.execute('''UPDATE Students
+# SET rfid_tags = 21116517426
+# WHERE student_id = 6401012630086''')
+c.execute('''UPDATE Items
+SET rfid_tags = 131424117
+WHERE item_id = 1''')
 
 
 conn.commit()
