@@ -43,3 +43,4 @@ async def TypeRfid(rfid:int):
     else:
         #rfid not in database
         return {"Plese Register Member"}
+    
