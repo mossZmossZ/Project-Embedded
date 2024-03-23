@@ -19,10 +19,11 @@ void setup() {
     Serial.begin(115200);
     SPI.begin(); // Init SPI bus
     rfid.PCD_Init(); // Init MFRC522 
-    lcd.init(); 
+    lcd.begin();
+    // Turn on the blacklight and print a message.
     lcd.backlight();
-    lcd.setCursor(3,0);
-    lcd.print("Hello, world!");
+    lcd.setCursor(0, 0); // ไปที่ตัวอักษรที่ 0 แถวที่ 1
+    lcd.print("Start Scaner");
     for (byte i = 0; i < 6; i++) {
       key.keyByte[i] = 0xFF;
     }
@@ -31,6 +32,8 @@ void setup() {
 }
 
 void loop() {
+  lcd.setCursor(0, 0); // ไปที่ตัวอักษรที่ 0 แถวที่ 1
+    lcd.print("Ready To Scan");
   // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
   if ( ! rfid.PICC_IsNewCardPresent())
     return;
@@ -48,12 +51,16 @@ void loop() {
     for (byte i = 0; i < 4; i++) {
       nuidPICC[i] = rfid.uid.uidByte[i];
     }
+    lcd.clear();
     Serial.print(F("NUID :"));
     printDec(rfid.uid.uidByte, rfid.uid.size);
     Serial.println();
+    lcd.setCursor(0, 0); // Set cursor to the beginning of first line
+    lcd.print("NUID: ");
+    printUID();
   }
   else Serial.println(F("Card read previously."));
-  delay(500);
+  delay(2000);
   lcd.clear();
 }
 
@@ -61,8 +68,12 @@ void printDec(byte *buffer, byte bufferSize) {
   for (byte i = 0; i < bufferSize; i++) {
     Serial.print(' ');
     Serial.print(buffer[i], DEC);
-    //lcd.setCursor(i, 0); // Set cursor position for LCD
-    //lcd.print(buffer[i]); // Print buffer content on LCD
-    delay(100);
+  }
+}
+void printUID() {
+  // Assuming rfid is your RFID object
+  // Print UID on LCD in decimal format
+  for (int i = 0; i < rfid.uid.size; i++) {
+    lcd.print(rfid.uid.uidByte[i], DEC);
   }
 }
