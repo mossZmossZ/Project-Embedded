@@ -12,4 +12,7 @@ body{
   width: 100%;
   padding: 5%;
 }
+.ag-theme-material{
+  --ag-material-accent-color:rgb(0,128,0);
 
+}

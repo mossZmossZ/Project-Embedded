@@ -22,7 +22,7 @@ function App() {
 
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
-      axios.get('http://{127.0.0.1:8000/api/borrow')
+      axios.get('http://127.0.0.1:8000/api/borrow')
           .then(response => {
               const mappedData = response.data.map(item => ({
                   Item: item[0],

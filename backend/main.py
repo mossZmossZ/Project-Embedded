@@ -59,13 +59,13 @@ async def read_rfid(request: RFID):
     print("RFID ID:", rfid_id) 
     try:
         # Check if rfid_no exists in Students table
-        cursor.execute("SELECT student_id FROM Students WHERE rfid_tags = ?", (rfid_no,))
+        cursor.execute("SELECT student_id FROM Students WHERE rfid_tags = ?", (rfid_id,))
         student_result = cursor.fetchone()
         if student_result:
             return {"message": "RFID found in Students table"}
 
         # Check if rfid_no exists in Items table
-        cursor.execute("SELECT item_id FROM Items WHERE rfid_tags = ?", (rfid_no,))
+        cursor.execute("SELECT item_id FROM Items WHERE rfid_tags = ?", (rfid_id,))
         item_result = cursor.fetchone()
 
         if item_result:
@@ -99,6 +99,22 @@ async def get_borrowed_items():
     FROM borrow
     JOIN items ON borrow.item_id = items.item_id
     JOIN students ON borrow.student_id = students.student_id
+""")
+        rows = cursor.fetchall()
+        return rows
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
+
+@app.get("/api/itemdata")
+async def get_borrowed_items():
+    # Create a connection to the SQLite database
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""SELECT item_name,available
+    FROM Items
 """)
         rows = cursor.fetchall()
         return rows

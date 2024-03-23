@@ -7,20 +7,16 @@ import { AgGridReact } from "ag-grid-react";
 export default function ItemList(){
     const [colDefs, setColDefs] = useState([
         { field: "Item" ,flex: 1},
-        { field: "Student" ,flex: 1},
-        { field: "Borrowed_date" ,flex: 0.8},
-        { field: "Return_date" ,flex: 0.8}
+        { field: "Available" ,flex: 1},
       ]);
 
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
-      axios.get('http://127.0.0.1:8000/api/borrow')
+      axios.get('http://127.0.0.1:8000/api/itemdata')
           .then(response => {
               const mappedData = response.data.map(item => ({
                   Item: item[0],
-                  Student: item[1],  // Assuming 'Status' is a placeholder value
-                  Borrowed_date: item[2],
-                  Return_date: item[3]
+                  Available: item[1] ===1 ? true :false  
               }));
               setRowData(mappedData);
           })
