@@ -19,8 +19,10 @@ void setup() {
     Serial.begin(115200);
     SPI.begin(); // Init SPI bus
     rfid.PCD_Init(); // Init MFRC522 
-    lcd.begin();
+    lcd.init(); 
     lcd.backlight();
+    lcd.setCursor(3,0);
+    lcd.print("Hello, world!");
     for (byte i = 0; i < 6; i++) {
       key.keyByte[i] = 0xFF;
     }
@@ -59,8 +61,8 @@ void printDec(byte *buffer, byte bufferSize) {
   for (byte i = 0; i < bufferSize; i++) {
     Serial.print(' ');
     Serial.print(buffer[i], DEC);
-    lcd.setCursor(i, 0); // Set cursor position for LCD
-    lcd.print(buffer[i]); // Print buffer content on LCD
+    //lcd.setCursor(i, 0); // Set cursor position for LCD
+    //lcd.print(buffer[i]); // Print buffer content on LCD
     delay(100);
   }
 }
