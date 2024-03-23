@@ -6,8 +6,8 @@ import { AgGridReact } from "ag-grid-react";
 
 export default function ItemList(){
     const [colDefs, setColDefs] = useState([
-        { field: "Item" ,flex: 1},
-        { field: "Available" ,flex: 1},
+        { field: "Item",flex:2 },
+        { field: "Available" },
       ]);
 
     const [rowData, setRowData] = useState([]);
@@ -25,11 +25,11 @@ export default function ItemList(){
           });
   }, []);
     return(
-        <div>
+        <div id = 'dashboard'>
             <Sidebar/>
             <div  className = 'table'>
-        <h3>Borrowed Item</h3>
-        <div className="ag-theme-quartz" style={{height: 250 }}>
+        <h3>ALL Item</h3>
+        <div className="ag-theme-quartz" style={{height: 250, padding:10,width:500 }}>
           <AgGridReact rowData={rowData} columnDefs={colDefs}/>
         </div>
     </div>
