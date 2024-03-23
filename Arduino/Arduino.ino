@@ -50,36 +50,29 @@ void loop() {
   lcd.setCursor(0, 0); // ไปที่ตัวอักษรที่ 0 แถวที่ 1
   lcd.print("Ready To Scan");
   // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
-  if ( ! rfid.PICC_IsNewCardPresent())
+  if (!rfid.PICC_IsNewCardPresent())
+    return;
+  // Verify if the NUID has been read
+  if (!rfid.PICC_ReadCardSerial())
     return;
 
-  // Verify if the NUID has been readed
-  if ( ! rfid.PICC_ReadCardSerial())
-    return;
-
-
-  if (rfid.uid.uidByte[0] != nuidPICC[0] || 
-    rfid.uid.uidByte[1] != nuidPICC[1] || 
-    rfid.uid.uidByte[2] != nuidPICC[2] || 
-    rfid.uid.uidByte[3] != nuidPICC[3] ) {
-    // Store NUID into nuidPICC array
-    for (byte i = 0; i < 4; i++) {
+  // Store NUID into nuidPICC array
+  for (byte i = 0; i < 4; i++) {
       nuidPICC[i] = rfid.uid.uidByte[i];
-    }
-    lcd.clear();
-    tone(BUZZER_PIN, 523);
-    delay(200);
-    noTone(BUZZER_PIN);
-    Serial.print(F("NUID :"));
-    printDec(rfid.uid.uidByte, rfid.uid.size);
-    Serial.println();
-    lcd.setCursor(0, 0); // Set cursor to the beginning of first line
-    lcd.print("NUID: ");
-    printUID();
-    String rfidData = prepareRFIDData();
-    sendRFIDData(rfidData);
   }
-  else Serial.println(F("Card read previously."));
+  lcd.clear();
+  tone(BUZZER_PIN, 523);
+  delay(200);
+  noTone(BUZZER_PIN);
+  Serial.print(F("NUID :"));
+  printDec(rfid.uid.uidByte, rfid.uid.size);
+  Serial.println();
+  lcd.setCursor(0, 0); // Set cursor to the beginning of first line
+  lcd.print("NUID: ");
+  printUID();
+  String rfidData = prepareRFIDData();
+  sendRFIDData(rfidData);
+
   delay(2000);
   lcd.clear();
 }
