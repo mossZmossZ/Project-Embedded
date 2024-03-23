@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
-import Slidebar from './Components/Sidebar';
+import App from './Pages/App';
+
 import { BrowserRouter, Routes,Route} from 'react-router-dom';
-import Register from './Register';
+import Register from './Pages/Register';
+import ItemList from './Pages/Itemlist';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -12,6 +13,7 @@ root.render(
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/itemlist" element={<ItemList />} />
     </Routes>
   </BrowserRouter>
 );
