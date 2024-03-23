@@ -1,8 +1,24 @@
+#uvicorn main:app --reload
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins = [
+    "*"
+]
 
-@app.get("/")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+
+
+@app.get("/api/HelloCom")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Hello Comnarin"}
