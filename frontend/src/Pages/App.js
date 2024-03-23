@@ -41,7 +41,7 @@ function App() {
 
     
     <div  className = 'table'>
-        <h3>Item Status</h3>
+        <h3>Borrowed Item</h3>
         <div className="ag-theme-quartz" style={{height: 250 }}>
           <AgGridReact rowData={rowData} columnDefs={colDefs}/>
         </div>

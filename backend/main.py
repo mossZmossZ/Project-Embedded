@@ -83,3 +83,41 @@ async def get_borrowed_items():
         raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
     finally:
         cursor.close()
+
+class ItemData(BaseModel):
+    rfid: int
+    item: str
+
+@app.post("/api/register")
+async def register_item(item_data: ItemData):
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO Items (item_name, rfid_tags, available) VALUES (?, ?, 1)",(item_data.item, item_data.rfid))
+        
+        conn.commit()
+        return {"message": "Item registered successfully"}
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
+
+class ItemData2(BaseModel):
+    studentNo: int
+    studentName: str
+    rfidNo: int        
+
+@app.post("/api/register2")
+async def register_item(item_data2: ItemData2):
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO Students (student_id, student_name, rfid_tags) VALUES (?, ?, ?)",(item_data2.studentNo, item_data2.studentName,item_data2.rfidNo))
+        
+        conn.commit()
+        #print(item_data2.studentNo, item_data2.studentName,item_data2.rfidNo)
+        return {"message": "Item registered successfully"}
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
