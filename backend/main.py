@@ -53,9 +53,32 @@ class RFID(BaseModel):
 @app.post('/api/SentRFID')
 async def read_rfid(request: RFID):
     data_RFID = {'rfid': request.rfid_id}
-    rfid_id = data_RFID['rfid']  
-    print("RFID ID:", rfid_id)  
-    return {"Susscessful"}
+    rfid_id = data_RFID['rfid'] 
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    print("RFID ID:", rfid_id) 
+    try:
+        # Check if rfid_no exists in Students table
+        cursor.execute("SELECT student_id FROM Students WHERE rfid_tags = ?", (rfid_no,))
+        student_result = cursor.fetchone()
+        if student_result:
+            return {"message": "RFID found in Students table"}
+
+        # Check if rfid_no exists in Items table
+        cursor.execute("SELECT item_id FROM Items WHERE rfid_tags = ?", (rfid_no,))
+        item_result = cursor.fetchone()
+
+        if item_result:
+            return {"message": "RFID found in Items table"}
+
+        return {"message": "RFID not found in Students or Items table"}
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
+
+    
+    
 
 @app.get("/api/GetTypeRFID")
 async def TypeRfid(rfid:int):
@@ -79,6 +102,44 @@ async def get_borrowed_items():
 """)
         rows = cursor.fetchall()
         return rows
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
+
+class ItemData(BaseModel):
+    rfid: int
+    item: str
+
+@app.post("/api/register")
+async def register_item(item_data: ItemData):
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO Items (item_name, rfid_tags, available) VALUES (?, ?, 1)",(item_data.item, item_data.rfid))
+        
+        conn.commit()
+        return {"message": "Item registered successfully"}
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
+
+class ItemData2(BaseModel):
+    studentNo: int
+    studentName: str
+    rfidNo: int        
+
+@app.post("/api/register2")
+async def register_item(item_data2: ItemData2):
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO Students (student_id, student_name, rfid_tags) VALUES (?, ?, ?)",(item_data2.studentNo, item_data2.studentName,item_data2.rfidNo))
+        
+        conn.commit()
+        #print(item_data2.studentNo, item_data2.studentName,item_data2.rfidNo)
+        return {"message": "Item registered successfully"}
     except Error as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
     finally:
