@@ -10,7 +10,7 @@ const char* host = "192.168.1.144"; // Change to your FastAPI host address
 
 #define SS_PIN 5
 #define RST_PIN 0
-#define BUZZER_PIN 2
+#define BUZZER_PIN 15
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -33,6 +33,8 @@ void setup() {
     tone(BUZZER_PIN, 500);
     delay(100);
     tone(BUZZER_PIN, 500);
+    delay(100);
+    noTone(BUZZER_PIN);
     lcd.print("Start Scaner");
     for (byte i = 0; i < 6; i++) {
       key.keyByte[i] = 0xFF;
@@ -65,9 +67,9 @@ void loop() {
       nuidPICC[i] = rfid.uid.uidByte[i];
     }
     lcd.clear();
-    tone(BUZZER_PIN, 500);
+    tone(BUZZER_PIN, 523);
     delay(200);
-    tone(BUZZER_PIN, 1000);
+    noTone(BUZZER_PIN);
     Serial.print(F("NUID :"));
     printDec(rfid.uid.uidByte, rfid.uid.size);
     Serial.println();
