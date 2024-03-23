@@ -13,9 +13,23 @@ export default function  Register ()  {
     const  [rfidNo, setRfidNo] =  useState('');
 
 
-	const  handleChangeRfid = (event) => {
-		setRfid(event.target.value);
-	};
+    const handleChangeRfid = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/GetRFID', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                    // Add any other headers if needed
+                }
+            });
+            const data = await response.json();
+            // Do something with the data, such as updating state
+            console.log(data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
     const  handleChangeItem = (event) => {
 		setItem(event.target.value);
 	};
@@ -81,12 +95,14 @@ return  (
                 <h4>Register Item</h4>
                 <label>RFID No:
                     <>   </>
-                    <input  type="Integer"  value={rfid} onChange={handleChangeRfid} />
+                    <input  readOnly type="Integer"  value={rfid} onChange={handleChangeRfid} />
+                    <button  onClick={handleChangeRfid} >Read</button>
                 </label> 
                 <label>Item Name:
                     <>   </>
                     <input  type="text"  value={item} onChange={handleChangeItem} />
                 </label>
+
                <Button  type = "submit" className='submit_button'>Submit</Button>
             </div>
            
