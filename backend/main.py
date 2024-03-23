@@ -1,12 +1,25 @@
 #uvicorn main:app --reload
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from sqlite3 import Error
+import sqlite3
 import datetime
 
 time_now = datetime.datetime.now()
 time_formatted = time_now.strftime("%d-%m-%Y %H:%M:%S")
 print("Current Time :", time_formatted)
+
+# Function to create a connection to the SQLite database
+def create_connection(db_file):
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+    except Error as e:
+        print(e)
+    return conn
+
+
 
 app = FastAPI()
 
@@ -53,3 +66,20 @@ async def TypeRfid(rfid:int):
         #rfid not in database
         return {"Plese Register Member"}
     
+@app.get("/api/borrow")
+async def get_borrowed_items():
+    # Create a connection to the SQLite database
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""SELECT items.item_name, students.student_name, borrow.borrowed_date, borrow.return_date
+    FROM borrow
+    JOIN items ON borrow.item_id = items.item_id
+    JOIN students ON borrow.student_id = students.student_id
+""")
+        rows = cursor.fetchall()
+        return rows
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
