@@ -91,6 +91,7 @@ void loop() {
         lcd.print(name);
         lcd.setCursor(0, 1);
         lcd.print("Scan Items");
+        String StudentRFID = rfidData;
         // Clear previous scan data
         memset(nuidPICC, 0, sizeof(nuidPICC));
         while (true) {
@@ -115,6 +116,7 @@ void loop() {
             // Send RFID data to the server and get the role
             String rfidData = prepareRFIDData();
             String result = sendRFIDData(rfidData);
+            String ItemsRFID = rfidData;
             int commaIndex = result.indexOf(',');
             String name = result.substring(0, commaIndex);
             String role = result.substring(commaIndex + 1);
@@ -127,6 +129,8 @@ void loop() {
                 lcd.setCursor(0, 1);
                 lcd.print("SetDaytoBorrow");
                 delay(5000);
+                String ResultDataSent = sendBorrowToServer(StudentRFID, ItemsRFID,"5");
+                Serial.print(ResultDataSent);
                 lcd.clear();
                 break;
             }
@@ -385,7 +389,71 @@ String sendItemsCheck(String rfidData) {
         return "Error";
     }
 }
+String sendBorrowToServer(String student_rfid, String item_rfid, String borrow_date) {
+    String result_Status = ""; // Initialize result variable
 
+    if (WiFi.status() == WL_CONNECTED) {
+        WiFiClient client;
+        if (client.connect(host, 8000)) {
+            Serial.println("Connected to server");
+
+            // Construct the JSON payload
+            String payload = "{\"Student_Rfid_tag\": \"" + student_rfid + "\", \"Item_Rfid_tag\": \"" + item_rfid + "\", \"borrow_Date\": \"" + borrow_date + "\"}";
+            // Print the data before sending
+            Serial.println(payload);
+
+            // Construct the HTTP request
+            String httpRequest = "POST /api/SEND_Borrow HTTP/1.1\r\n";
+            httpRequest += "Host: ";
+            httpRequest += host;
+            httpRequest += "\r\n";
+            httpRequest += "Content-Type: application/json\r\n";
+            httpRequest += "Content-Length: ";
+            httpRequest += String(payload.length());
+            httpRequest += "\r\n\r\n";
+            httpRequest += payload;
+
+            // Send the HTTP request
+            client.print(httpRequest);
+            Serial.println("Data sent to server");
+
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("Waiting Data");
+            lcd.setCursor(0, 1);
+            lcd.print("From Server");
+
+            // Wait for response from the server
+            delay(500); // Wait for 5 seconds
+
+            // Check if response is available
+            if (client.available()) {
+                // Read the response body
+                result_Status = client.readString();
+                // Parse JSON response
+                if (result_Status.indexOf("Available") != -1) {
+                    return "Available";
+                } else if (result_Status.indexOf("unavailable") != -1) {
+                    return "unavailable";
+                } else {
+                    return "Unknown";
+                }
+            } else {
+                Serial.println("No response from server");
+                return "Error";
+            }
+
+            // Close the connection
+            client.stop();
+        } else {
+            Serial.println("Connection to server failed");
+            return "Error";
+        }
+    } else {
+        Serial.println("WiFi not connected");
+        return "Error";
+    }
+}
 
 
 
