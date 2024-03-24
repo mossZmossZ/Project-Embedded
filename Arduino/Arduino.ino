@@ -20,6 +20,9 @@ bool isStudent(String role) {
 bool isItems(String role) {
     return role == "Items";
 }
+bool isunknown(String role){
+    return role =="NotFound";
+}
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -79,6 +82,7 @@ void loop() {
     lcd.setCursor(0, 0); // Set cursor to the beginning of first line
     lcd.print("NUID: ");
     printUID();
+    delay(1000);
     String rfidData = prepareRFIDData();
     String result = sendRFIDData(rfidData);
     int commaIndex = result.indexOf(',');
@@ -91,10 +95,21 @@ void loop() {
         lcd.print(name);
         lcd.setCursor(0, 1);
         lcd.print("Scan Items");
+        delay(2000);
         String StudentRFID = rfidData;
         // Clear previous scan data
         memset(nuidPICC, 0, sizeof(nuidPICC));
-        while (true) {
+        unsigned long startTime = millis(); // Record the start time
+            while (true) {
+              // Check if 20 seconds have passed
+              if (millis() - startTime > 40000) {
+                  // Timeout reached, exit the loop
+                  lcd.clear();
+                  lcd.print("Timeout reached");
+                  delay(2000);
+                  lcd.clear();
+                  break;
+              }
             // Wait for RFID card to be scanned and read its serial
             while (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
                 delay(100); // Add a small delay to prevent busy-waiting
@@ -123,15 +138,98 @@ void loop() {
             Serial.println(role);
             // Check if the role is "Items"
             if (role == "Items") {
-                lcd.clear();
-                lcd.setCursor(0, 0);
+                int commaIndex = result.indexOf(',');
+                String name = result.substring(0, commaIndex);
                 lcd.print(name);
-                lcd.setCursor(0, 1);
-                lcd.print("SetDaytoBorrow");
-                delay(5000);
-                String ResultDataSent = sendBorrowToServer(StudentRFID, ItemsRFID,"5");
-                Serial.print(ResultDataSent);
-                lcd.clear();
+                String rfidData = prepareRFIDData();
+                String result_ItemsStatus = sendItemsCheck(rfidData);
+                Serial.print(result_ItemsStatus);
+                // Clear previous scan data
+                //memset(nuidPICC, 0, sizeof(nuidPICC));
+                if (result_ItemsStatus == "Available"){
+                  lcd.clear();
+                  lcd.setCursor(0, 0);
+                  lcd.print(name);
+                  lcd.setCursor(0, 1);
+                  lcd.print("SetDaytoBorrow");
+                  delay(5000);
+                  String ResultDataSent = sendBorrowToServer(StudentRFID, ItemsRFID,"5");
+                  lcd.clear();
+                  lcd.setCursor(0, 0);
+                  lcd.print(ResultDataSent);
+                  lcd.setCursor(0, 1);
+                  lcd.print("Thank You!");
+                  delay(2000);
+                  lcd.clear();
+                }
+                if(result_ItemsStatus =="unavailable"){
+                  lcd.clear();
+                  lcd.setCursor(0, 0);
+                  lcd.print("Item Unavailable");
+                  lcd.setCursor(0, 1);
+                  lcd.print("Scan Again");
+                  memset(nuidPICC, 0, sizeof(nuidPICC));
+                  unsigned long startTime_ItemsStatus = millis(); // Record the start time
+                  while (true) {
+                      // Check if 20 seconds have passed
+                      if (millis() - startTime_ItemsStatus > 40000) {
+                          // Timeout reached, exit the loop
+                          lcd.clear();
+                          lcd.print("Timeout reached");
+                          delay(2000);
+                          lcd.clear();
+                          break;
+                      }
+                      // Wait for RFID card to be scanned and read its serial
+                      while (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
+                          delay(100); // Add a small delay to prevent busy-waiting
+                      }
+                      // Store NUID into nuidPICC array
+                      for (byte i = 0; i < 4; i++) {
+                          nuidPICC[i] = rfid.uid.uidByte[i];
+                      }
+                      lcd.clear();
+                      tone(BUZZER_PIN, 523);
+                      delay(200);
+                      noTone(BUZZER_PIN);
+                      Serial.print(F("NUID :"));
+                      printDec(rfid.uid.uidByte, rfid.uid.size);
+                      Serial.println();
+                      lcd.setCursor(0, 0); // Set cursor to the beginning of first line
+                      lcd.print("NUID: ");
+                      printUID();
+                      int commaIndex = result.indexOf(',');
+                      String name = result.substring(0, commaIndex);
+                      lcd.print(name);
+                      String rfidData = prepareRFIDData();
+                      String result_ItemsStatus = sendItemsCheck(rfidData);
+                      Serial.print(result_ItemsStatus);
+                      if (result_ItemsStatus =="Available") {
+                          lcd.clear();
+                          lcd.setCursor(0, 0);
+                          lcd.print(name);
+                          lcd.setCursor(0, 1);
+                          lcd.print("SetDaytoBorrow");
+                          delay(5000);
+                          String ResultDataSent = sendBorrowToServer(StudentRFID, ItemsRFID,"5");
+                          lcd.setCursor(0, 0);
+                          lcd.print(ResultDataSent);
+                          lcd.setCursor(0, 1);
+                          lcd.print("Thank You!");
+                          delay(2000);
+                          lcd.clear();
+                          break;
+                      }
+                      else{
+                          lcd.clear();
+                          lcd.setCursor(0, 0);
+                          lcd.print("Items Not Available");
+                          lcd.setCursor(0, 1);
+                          lcd.print("Scan Again");
+                          memset(nuidPICC, 0, sizeof(nuidPICC));
+                      }
+                  }
+                }  
                 break;
             }
             else{
@@ -142,81 +240,108 @@ void loop() {
               lcd.print("Scan Again");
               memset(nuidPICC, 0, sizeof(nuidPICC));
             }
-        }  
+        }
     } 
     if (isItems(role)) {
         int commaIndex = result.indexOf(',');
         String name = result.substring(0, commaIndex);
         lcd.print(name);
         String rfidData = prepareRFIDData();
+        String itemsRFID = rfidData;
         String result_ItemsStatus = sendItemsCheck(rfidData);
         Serial.print(result_ItemsStatus);
         // Clear previous scan data
-        //memset(nuidPICC, 0, sizeof(nuidPICC));
+        memset(nuidPICC, 0, sizeof(nuidPICC));
         if (result_ItemsStatus == "Available"){
           lcd.clear();
           lcd.setCursor(0,0);
           lcd.print(name);
           lcd.setCursor(0,1);
           lcd.print("Available");
-          delay(5000);
-          Serial.println("Please Scan Student Card");
+          delay(2000);
           lcd.clear();
           lcd.setCursor(0, 0);
           lcd.print("Please Scan ");
           lcd.setCursor(0, 1);
           lcd.print("Student Card");
-          delay(3000);
+          delay(2000);
           lcd.clear();
         }
         if(result_ItemsStatus =="unavailable"){
-          while (true) {
-            // Wait for RFID card to be scanned and read its serial
-            while (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
+          lcd.clear();
+          lcd.setCursor(0, 0);
+          lcd.print("Please Scan ");
+          lcd.setCursor(0, 1);
+          lcd.print("Student Card");
+          memset(nuidPICC, 0, sizeof(nuidPICC));
+          unsigned long startTime = millis(); // Record the start time
+            while (true) {
+              // Check if 20 seconds have passed
+              if (millis() - startTime > 40000) {
+                  // Timeout reached, exit the loop
+                  lcd.clear();
+                  lcd.print("Timeout reached");
+                  delay(2000);
+                  lcd.clear();
+                  break;
+              }
+
+              // Wait for RFID card to be scanned and read its serial
+              while (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
                 delay(100); // Add a small delay to prevent busy-waiting
-            }
-            // Store NUID into nuidPICC array
-            for (byte i = 0; i < 4; i++) {
-                nuidPICC[i] = rfid.uid.uidByte[i];
-            }
-            lcd.clear();
-            tone(BUZZER_PIN, 523);
-            delay(200);
-            noTone(BUZZER_PIN);
-            Serial.print(F("NUID :"));
-            printDec(rfid.uid.uidByte, rfid.uid.size);
-            Serial.println();
-            lcd.setCursor(0, 0); // Set cursor to the beginning of first line
-            lcd.print("NUID: ");
-            printUID();
-            // Send RFID data to the server and get the role
-            //String rfidData = prepareRFIDData();
-            //String result_ItemsStatus = sendItemsCheck(rfidData);
-            /*
-            if (role == "Student") {
-                lcd.clear();
-                lcd.setCursor(0, 0);
-                lcd.print(name);
-                lcd.setCursor(0, 1);
-                lcd.print("Comfirm?");
-                delay(5000);
-                lcd.clear();
-                break;
-            }
-            else{
+              }
+
+              // Store NUID into nuidPICC array
+              for (byte i = 0; i < 4; i++) {
+                  nuidPICC[i] = rfid.uid.uidByte[i];
+              }
               lcd.clear();
-              lcd.setCursor(0, 0);
-              lcd.print("Invalid Card");
-              lcd.setCursor(0, 1);
-              lcd.print("Scan Again");
-              memset(nuidPICC, 0, sizeof(nuidPICC));
-            }
-            */
+              tone(BUZZER_PIN, 523);
+              delay(200);
+              noTone(BUZZER_PIN);
+              Serial.print(F("NUID :"));
+              printDec(rfid.uid.uidByte, rfid.uid.size);
+              Serial.println();
+              lcd.setCursor(0, 0); // Set cursor to the beginning of first line
+              lcd.print("NUID: ");
+              printUID();
+              int commaIndex = result.indexOf(',');
+              String name = result.substring(0, commaIndex);
+              lcd.print(name);
+              String rfidData = prepareRFIDData();
+              String result_ReturnStatus = sendReturnToServer(rfidData, itemsRFID);
+              Serial.print(result_ReturnStatus);
+              if (result_ReturnStatus =="successfully") {
+                  lcd.clear();
+                  lcd.setCursor(0, 0);
+                  lcd.print(result_ReturnStatus);
+                  lcd.setCursor(0, 1);
+                  lcd.print("Thank You!");
+                  delay(2000);
+                  lcd.clear();
+                  break;
+              }
+              else{
+                  lcd.clear();
+                  lcd.setCursor(0, 0);
+                  lcd.print("Invalid Card");
+                  lcd.setCursor(0, 1);
+                  lcd.print("Scan Again");
+                  memset(nuidPICC, 0, sizeof(nuidPICC));
+              }
           }
         }  
     } 
+    if (isunknown(role)) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Not Found");
+      lcd.setCursor(0,1);
+      lcd.print("Register");
+      delay(2000);
+    }
     else{
-      return;
+      lcd.clear();
     }
     lcd.clear();
   }
@@ -359,7 +484,7 @@ String sendItemsCheck(String rfidData) {
             lcd.print("From Server");
 
             // Wait for response from the server
-            delay(3000); // Wait for 5 seconds
+            delay(500); // Wait for 5 seconds
 
             // Check if response is available
             if (client.available()) {
@@ -431,12 +556,76 @@ String sendBorrowToServer(String student_rfid, String item_rfid, String borrow_d
                 // Read the response body
                 result_Status = client.readString();
                 // Parse JSON response
-                if (result_Status.indexOf("Available") != -1) {
-                    return "Available";
-                } else if (result_Status.indexOf("unavailable") != -1) {
-                    return "unavailable";
+                if (result_Status.indexOf("successfully") != -1) {
+                    return "successfully";
                 } else {
-                    return "Unknown";
+                    return "No response";
+                }
+            } else {
+                Serial.println("No response from server");
+                return "Error";
+            }
+
+            // Close the connection
+            client.stop();
+        } else {
+            Serial.println("Connection to server failed");
+            return "Error";
+        }
+    } else {
+        Serial.println("WiFi not connected");
+        return "Error";
+    }
+}
+String sendReturnToServer(String student_rfid, String item_rfid) {
+    String result_Status = ""; // Initialize result variable
+
+    if (WiFi.status() == WL_CONNECTED) {
+        WiFiClient client;
+        if (client.connect(host, 8000)) {
+            Serial.println("Connected to server");
+
+            // Construct the JSON payload
+            String payload = "{\"Student_Rfid_tag\": \"" + student_rfid + "\", \"Item_Rfid_tag\": \"" + item_rfid + "\"}";
+            // Print the data before sending
+            Serial.println(payload);
+
+            // Construct the HTTP request
+            String httpRequest = "POST /api/RETURN_Item HTTP/1.1\r\n";
+            httpRequest += "Host: ";
+            httpRequest += host;
+            httpRequest += "\r\n";
+            httpRequest += "Content-Type: application/json\r\n";
+            httpRequest += "Content-Length: ";
+            httpRequest += String(payload.length());
+            httpRequest += "\r\n\r\n";
+            httpRequest += payload;
+
+            // Send the HTTP request
+            client.print(httpRequest);
+            Serial.println("Data sent to server");
+
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("Waiting Data");
+            lcd.setCursor(0, 1);
+            lcd.print("From Server");
+
+            // Wait for response from the server
+            delay(500); // Wait for 5 seconds
+
+            // Check if response is available
+            if (client.available()) {
+                // Read the response body
+                result_Status = client.readString();
+                // Parse JSON response
+                if (result_Status.indexOf("successfully") != -1) {
+                    return "successfully";
+                } 
+                if (result_Status.indexOf("ERROR") != -1) {
+                    return "Error";
+                }else {
+                    return "No response";
                 }
             } else {
                 Serial.println("No response from server");
