@@ -257,3 +257,43 @@ async def SEND_Borrow(request: borrow):
         cursor.close()
         conn.close()
 
+class ReturnItem(BaseModel):
+    Student_Rfid_tag: str
+    Item_Rfid_tag: str
+
+# Create the endpoint for returning an item
+@app.post('/api/RETURN_Item')
+async def RETURN_Item(request: ReturnItem):
+    student_rfid_tag = int(request.Student_Rfid_tag)
+    item_rfid_tag = int(request.Item_Rfid_tag)
+
+    # Connect to the database
+    conn = sqlite3.connect('Embedded.db')
+    cursor = conn.cursor()
+
+    try:
+        # Get student_id from Students table
+        cursor.execute("SELECT student_id FROM Students WHERE rfid_tags = ?", (student_rfid_tag,))
+        student_id = cursor.fetchone()[0]
+
+        # Get item_id from Items table
+        cursor.execute("SELECT item_id FROM Items WHERE rfid_tags = ?", (item_rfid_tag,))
+        item_id = cursor.fetchone()[0]
+
+        # Delete the corresponding row from the Borrow table
+        cursor.execute("DELETE FROM Borrow WHERE item_id = ? AND student_id = ? AND return_date IS NULL", (item_id, student_id))
+        
+        # Update the available status of the item in the Items table
+        cursor.execute("UPDATE Items SET available = 1 WHERE item_id = ?", (item_id,))
+        conn.commit()
+
+        return {"message": "Item returned successfully"}
+    except Exception as e:
+        # Rollback changes if an error occurs
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        # Close the database connection
+        cursor.close()
+        conn.close()
+
