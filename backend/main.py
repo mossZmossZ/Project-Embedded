@@ -247,7 +247,7 @@ async def SEND_Borrow(request: borrow):
         cursor.execute("UPDATE Items SET available = 0 WHERE rfid_tags = ?", (item_rfid_tag,))
         conn.commit()
         
-        return {"message": "Data stored successfully"}
+        return {"successfully"}
     except Exception as e:
         # Rollback changes if an error occurs
         conn.rollback()
@@ -258,5 +258,3 @@ async def SEND_Borrow(request: borrow):
         conn.close()
     # Process the data (e.g., save it to a database)
     # Replace this with your actual processing logic
-
-    return {"message": "Data received successfully"}
