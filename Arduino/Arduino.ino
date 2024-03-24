@@ -141,13 +141,31 @@ void loop() {
         }  
     } 
     if (isItems(role)) {
+        int commaIndex = result.indexOf(',');
+        String name = result.substring(0, commaIndex);
         lcd.print(name);
         String rfidData = prepareRFIDData();
         String result_ItemsStatus = sendItemsCheck(rfidData);
-        Serial.println(result_ItemsStatus);
+        Serial.print(result_ItemsStatus);
         // Clear previous scan data
-        memset(nuidPICC, 0, sizeof(nuidPICC));
-        if(result_ItemsStatus =="0"){
+        //memset(nuidPICC, 0, sizeof(nuidPICC));
+        if (result_ItemsStatus == "Available"){
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.print(name);
+          lcd.setCursor(0,1);
+          lcd.print("Available");
+          delay(5000);
+          Serial.println("Please Scan Student Card");
+          lcd.clear();
+          lcd.setCursor(0, 0);
+          lcd.print("Please Scan ");
+          lcd.setCursor(0, 1);
+          lcd.print("Student Card");
+          delay(3000);
+          lcd.clear();
+        }
+        if(result_ItemsStatus =="unavailable"){
           while (true) {
             // Wait for RFID card to be scanned and read its serial
             while (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
@@ -190,27 +208,12 @@ void loop() {
               memset(nuidPICC, 0, sizeof(nuidPICC));
             }
             */
-        }
-        if(result_ItemsStatus =="1"){
-            lcd.clear();
-            lcd.setCursor(0, 0);
-            lcd.print(name);
-            lcd.setCursor(0, 1);
-            lcd.print("Available");
-            delay(3000);
-            lcd.clear();
-        }
+          }
         }  
     } 
-    /*
-    if(NotFound){
-
-    }
-    */
     else{
       return;
     }
-    delay(2000);
     lcd.clear();
   }
 
@@ -318,7 +321,7 @@ String sendRFIDData(String rfidData) {
 }
 String sendItemsCheck(String rfidData) {
     String result_ItemsStatus = ""; // Initialize result variable
-    // Send the RFID data to the FastAPI endpoint
+
     if (WiFi.status() == WL_CONNECTED) {
         WiFiClient client;
         if (client.connect(host, 8000)) {
@@ -352,33 +355,37 @@ String sendItemsCheck(String rfidData) {
             lcd.print("From Server");
 
             // Wait for response from the server
-            unsigned long timeout = millis();
-            while (client.connected() && millis() - timeout < 5000) { // Timeout after 5 seconds
-                if (client.available()) {
-                    String line = client.readStringUntil('\n'); // Read response line by line
-                    if (line == "\r") { // Empty line indicates end of headers
-                        // Start reading response body
-                        result_ItemsStatus = client.readString();
-                        break; // Exit the loop
-                    }
+            delay(3000); // Wait for 5 seconds
+
+            // Check if response is available
+            if (client.available()) {
+                // Read the response body
+                result_ItemsStatus = client.readString();
+                // Parse JSON response
+                if (result_ItemsStatus.indexOf("Available") != -1) {
+                    return "Available";
+                } else if (result_ItemsStatus.indexOf("unavailable") != -1) {
+                    return "unavailable";
+                } else {
+                    return "Unknown";
                 }
+            } else {
+                Serial.println("No response from server");
+                return "Error";
             }
 
-            // Print the response body for debugging
-            Serial.println("Response");
-            lcd.clear();
             // Close the connection
             client.stop();
         } else {
             Serial.println("Connection to server failed");
+            return "Error";
         }
     } else {
         Serial.println("WiFi not connected");
+        return "Error";
     }
-
-    // Return the result
-    return result_ItemsStatus;
 }
+
 
 
 

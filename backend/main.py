@@ -99,11 +99,13 @@ async def read_rfid(request: RFID):
         rows_Result = rows[0]
         rows_finalResult = rows_Result[0]
         if rows_finalResult == 0:
-            return "unavailable"
+            return {"unavailable"}
         elif rows_finalResult == 1:
-            return "Available"
+            return {"Available"}
         else:
-            return "Unknown"
+            return {"Unknown"}
+        
+        
         
         
         
