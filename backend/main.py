@@ -212,4 +212,19 @@ async def ava_data():
     finally:
         cursor.close()
 
+class borrow(BaseModel):
+    Student_Rfid_tag: str
+    Item_Rfid_tag: str
+    borrow_Date: str
 
+# Create the endpoint
+@app.post('/api/SEND_Borrow')
+async def SEND_Borrow(request: borrow):
+    student_rfid_tag = request.Student_Rfid_tag
+    item_rfid_tag = request.Item_Rfid_tag
+    borrow_date = request.borrow_Date
+
+    # Process the data (e.g., save it to a database)
+    # Replace this with your actual processing logic
+
+    return {"message": "Data received successfully"}
