@@ -256,8 +256,4 @@ async def SEND_Borrow(request: borrow):
         # Close the database connection
         cursor.close()
         conn.close()
-    # Process the data (e.g., save it to a database)
-    # Replace this with your actual processing logic
-
-    return {"message": "Data received successfully"}
 
