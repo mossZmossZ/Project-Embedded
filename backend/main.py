@@ -246,7 +246,7 @@ async def SEND_Borrow(request: borrow):
          # Update the available status of the item in the Items table
         cursor.execute("UPDATE Items SET available = 0 WHERE rfid_tags = ?", (item_rfid_tag,))
         conn.commit()
-        #test
+        
         
         return {"message": "Data stored successfully"}
     except Exception as e:
