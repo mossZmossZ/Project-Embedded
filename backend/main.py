@@ -6,6 +6,7 @@ from sqlite3 import Error
 import sqlite3
 import datetime
 
+
 time_now = datetime.datetime.now()
 time_formatted = time_now.strftime("%d-%m-%Y %H:%M:%S")
 print("Current Time :", time_formatted)
@@ -116,7 +117,7 @@ async def get_rfid():
     global lastRFID
     if lastRFID is None:
         raise HTTPException(status_code=404, detail="No RFID data has been posted yet")
-    return {"RFID": lastRFID}
+    return int(lastRFID)
 
     
 @app.get("/api/borrow")
@@ -177,7 +178,7 @@ class ItemData2(BaseModel):
     rfidNo: int        
 
 @app.post("/api/register2")
-async def register_item(item_data2: ItemData2):
+async def register_item2(item_data2: ItemData2):
     conn = create_connection("Embedded.db")
     cursor = conn.cursor()
     try:
@@ -190,3 +191,23 @@ async def register_item(item_data2: ItemData2):
         raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
     finally:
         cursor.close()
+
+@app.get("/api/ava_data")
+async def ava_data():
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT COUNT(item_id) FROM Items WHERE available = 1")
+        available_count = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(item_id) FROM Items WHERE available = 0")
+        unavailable_count = cursor.fetchone()[0]
+
+        conn.commit()
+        return  available_count,  unavailable_count
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
+
+

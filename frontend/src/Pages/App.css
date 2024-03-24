@@ -12,7 +12,18 @@ body{
   width: 100%;
   padding: 5%;
 }
-.ag-theme-material{
-  --ag-material-accent-color:rgb(0,128,0);
+.head{
+  display: flex;
+  flex-direction: row;
+}
+#task{
+  font-size: 4rem;
 
+}
+.table h3{
+  color: #008170;
+}
+.ag-theme-quartz {
+  
+  --ag-checkbox-unchecked-color:#008170
 }

@@ -25,16 +25,17 @@ c.execute("""CREATE TABLE IF NOT EXISTS Borrow(
           return_date TIMESTAMP
             )""")
 # c.execute("INSERT INTO Students (student_id, student_name, rfid_tags) VALUES (6401012630086, 'Narin Sirinapuk', '0005280984')")
-# c.execute("INSERT INTO Items (item_id,item_name, rfid_tags, available) VALUES (2,'Breadboard', 'RFID_102', 1)")
+c.execute("INSERT INTO Items (item_id,item_name, rfid_tags, available) VALUES (5,'Breadboard2', 'RFID_102', 0)")
 borrowed_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 return_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d %H:%M:%S')
 # c.execute("INSERT INTO Borrow (item_id, student_id, borrowed_date, return_date) VALUES (2, 6401012630086, ?, ?)", (borrowed_date, return_date))
 # c.execute('''UPDATE Students
-# SET rfid_tags = 21116517426
-# WHERE student_id = 6401012630086''')
-c.execute('''UPDATE Items
-SET rfid_tags = 131424117
-WHERE item_id = 1''')
+# SET student_name = "Nattavee Narischat"
+# WHERE student_id = 6401012620021''')
+# c.execute('''UPDATE Items
+# SET rfid_tags = 131424117
+# WHERE item_id = 1''')
+c.execute('''DELETE FROM Items WHERE rfid_tags = 352383319''')
 
 
 conn.commit()

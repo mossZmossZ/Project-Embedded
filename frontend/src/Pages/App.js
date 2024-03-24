@@ -5,20 +5,51 @@ import { useState,useEffect } from 'react';
 import Sidebar from '../Components/Sidebar.js'
 import "./App.css";
 import axios from 'axios';
-// import dotenv from 'dotenv';
-// dotenv.config()
+import DescriptionIcon from '@mui/icons-material/Description';
+import { Chart } from "react-google-charts";
+
+
 
 
 
 function App() {
-     // Column Definitions: Defines the columns to be displayed.
+
+  const [pieData, setPieData] = useState();
+  const [avaData, setAvaData] = useState();
+  const [unAvaData, setUnAvaData] = useState();
+  const totalData = avaData+unAvaData;
+
+  useEffect(() => {
+      axios.get('http://127.0.0.1:8000/api/ava_data')
+          .then(response => {
+              const [availableCount, unavailableCount] = response.data;
+              setPieData([
+                  ['Availability','Count'],
+                  [ 'Available', availableCount ],
+                  ['Unavailable', unavailableCount ]]
+              );
+              setAvaData(availableCount)
+              setUnAvaData(unavailableCount)
+          })
+          .catch(error => {
+              console.error('Error fetching data: ', error);
+          });
+  }, []);
+
+  
+  const options = {
+    title: "Equipment Availability",
+    colors:['#008170', '#bf1029'],
+    backgroundColor: '#D3D3D3'
+  };
+    // Column Definitions: Defines the columns to be displayed.
      const [colDefs, setColDefs] = useState([
       { field: "Item" ,flex: 1},
       { field: "Student" ,flex: 1},
       { field: "Borrowed_date" ,flex: 0.8},
       { field: "Return_date" ,flex: 0.8}
     ]);
-    const BACKEND_URL = process.env.BACKEND_API
+
 
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
@@ -42,10 +73,22 @@ function App() {
   <div >
     <div id = 'dashboard'>
       <Sidebar/>
-
-    
+      <h2>{totalData}</h2>
+      <h2>{avaData}</h2>
+      <h2>{unAvaData}</h2>
+      <Chart
+        chartType="PieChart"
+        data={pieData}
+        options={options}
+        width={"100%"}
+        height={"400px"}
+    />
     <div  className = 'table'>
+      
+      <div className='head'>
         <h3>Borrowed Item</h3>
+        <DescriptionIcon id = 'task' />
+      </div>
         <div className="ag-theme-quartz" style={{height: 250 }}>
           <AgGridReact rowData={rowData} columnDefs={colDefs}/>
         </div>
