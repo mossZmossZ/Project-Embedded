@@ -63,25 +63,53 @@ async def read_rfid(request: RFID):
         cursor.execute("SELECT student_name FROM Students WHERE rfid_tags = ?", (rfid_id,))
         student_result = cursor.fetchone()
         if student_result:
-            return student_result,"Student"
+            student_names = student_result[0]
+            return student_names,"Student"
 
         # Check if rfid_no exists in Items table
         cursor.execute("SELECT item_name FROM Items WHERE rfid_tags = ?", (rfid_id,))
         item_result = cursor.fetchone()
-
+        
         if item_result:
-            return item_result,"Items"
+            name_items = item_result[0]
+            return name_items,"Items"
         else:
             global lastRFID
             lastRFID = rfid_id 
-            return {"notfound"}
+            return "NotFound","NotFound"
     except Error as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
     finally:
         cursor.close()
 
 
-    
+@app.post('/api/CheckItems')
+async def read_rfid(request: RFID):
+    data_RFID = {'rfid': request.rfid_id}
+    rfid_id = data_RFID['rfid'] 
+    print(rfid_id)
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""SELECT available
+    FROM Items
+    WHERE rfid_tags = ? """,(rfid_id,))
+        rows = cursor.fetchall()
+        rows_Result = rows[0]
+        rows_finalResult = rows_Result[0]
+        if rows_finalResult == 0:
+            return "unavailable"
+        elif rows_finalResult == 1:
+            return "Available"
+        else:
+            return "Unknown"
+        
+        
+        
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
     
 @app.get("/api/GetRFID")
 async def get_rfid():
