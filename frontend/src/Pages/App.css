@@ -1,7 +1,7 @@
 
-body{
-  margin: 0;
-  pad: 0;
+.body{
+display: flex;
+flex-direction: column;
 }
 #dashboard{
   background-color: #D3D3D3;

@@ -73,26 +73,54 @@ function App() {
   <div >
     <div id = 'dashboard'>
       <Sidebar/>
-      <h2>{totalData}</h2>
-      <h2>{avaData}</h2>
-      <h2>{unAvaData}</h2>
-      <Chart
+
+      <div className = 'body'>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Total Item</h5>
+                <h2>{totalData}</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Available Item</h5>
+                <h2>{unAvaData}</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Available Item</h5>
+                <h2>{avaData}</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div  className = 'table'>
+          <div className='head'>
+            <h3>Borrowed Item</h3>
+            <DescriptionIcon id = 'task' />
+          </div>
+        <div className="ag-theme-quartz" style={{height: 250 }}>
+          <AgGridReact rowData={rowData} columnDefs={colDefs}/>
+        </div>
+    </div>
+
+      </div>
+     
+      {/* <Chart
         chartType="PieChart"
         data={pieData}
         options={options}
         width={"100%"}
         height={"400px"}
-    />
-    <div  className = 'table'>
-      
-      <div className='head'>
-        <h3>Borrowed Item</h3>
-        <DescriptionIcon id = 'task' />
-      </div>
-        <div className="ag-theme-quartz" style={{height: 250 }}>
-          <AgGridReact rowData={rowData} columnDefs={colDefs}/>
-        </div>
-    </div>
+    /> */}
+
     </div>
   </div>
 

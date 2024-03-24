@@ -280,14 +280,21 @@ async def RETURN_Item(request: ReturnItem):
         cursor.execute("SELECT item_id FROM Items WHERE rfid_tags = ?", (item_rfid_tag,))
         item_id = cursor.fetchone()[0]
 
-        # Delete the corresponding row from the Borrow table
-        cursor.execute("DELETE FROM Borrow WHERE item_id = ? AND student_id = ? AND return_date IS NULL", (item_id, student_id))
-        
-        # Update the available status of the item in the Items table
-        cursor.execute("UPDATE Items SET available = 1 WHERE item_id = ?", (item_id,))
-        conn.commit()
+        # Check if the item is borrowed by the student
+        cursor.execute("SELECT * FROM Borrow WHERE item_id = ? AND student_id = ?", (item_id, student_id))
+        borrow_record = cursor.fetchone()
+        if borrow_record:
+            # Delete the corresponding row from the Borrow table
+            cursor.execute("DELETE FROM Borrow WHERE item_id = ? AND student_id = ? ", (item_id, student_id))
+            conn.commit()
 
-        return {"message": "Item returned successfully"}
+            # Update the available status of the item in the Items table
+            cursor.execute("UPDATE Items SET available = 1 WHERE rfid_tags = ?", (item_rfid_tag,))
+            conn.commit()
+
+            return {"message": "Item returned successfully"}
+        else:
+            return {"message": "Item cannot be returned. It is not borrowed by the student."}
     except Exception as e:
         # Rollback changes if an error occurs
         conn.rollback()
@@ -296,4 +303,3 @@ async def RETURN_Item(request: ReturnItem):
         # Close the database connection
         cursor.close()
         conn.close()
-
