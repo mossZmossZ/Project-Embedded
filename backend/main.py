@@ -4,10 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlite3 import Error
 import sqlite3
-import datetime
+from datetime import datetime,timedelta
 
 
-time_now = datetime.datetime.now()
+time_now = datetime.now()
 time_formatted = time_now.strftime("%d-%m-%Y %H:%M:%S")
 print("Current Time :", time_formatted)
 
@@ -220,10 +220,42 @@ class borrow(BaseModel):
 # Create the endpoint
 @app.post('/api/SEND_Borrow')
 async def SEND_Borrow(request: borrow):
-    student_rfid_tag = request.Student_Rfid_tag
-    item_rfid_tag = request.Item_Rfid_tag
+    student_rfid_tag = int(request.Student_Rfid_tag)
+    item_rfid_tag = int(request.Item_Rfid_tag)
     borrow_date = request.borrow_Date
+    borrowed_date2 = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return_date = (datetime.now() + timedelta(days=int(borrow_date))).strftime('%Y-%m-%d %H:%M:%S')
+     
+     # Connect to the database
+    conn = sqlite3.connect('Embedded.db')
+    cursor = conn.cursor()
 
+    try:
+        # Get student_id from Students table
+        cursor.execute("SELECT student_id FROM Students WHERE rfid_tags = ?", (student_rfid_tag,))
+        student_id = cursor.fetchone()[0]
+
+        # Get item_id from Items table
+        cursor.execute("SELECT item_id FROM Items WHERE rfid_tags = ?", (item_rfid_tag,))
+        item_id = cursor.fetchone()[0]
+
+        # Insert data into Borrow table
+        cursor.execute("INSERT INTO Borrow (item_id, student_id, borrowed_date,return_date) VALUES (?, ?, ?, ?)", (item_id, student_id, borrowed_date2, return_date))
+        
+
+         # Update the available status of the item in the Items table
+        cursor.execute("UPDATE Items SET available = 0 WHERE rfid_tags = ?", (item_rfid_tag,))
+        conn.commit()
+        
+        return {"message": "Data stored successfully"}
+    except Exception as e:
+        # Rollback changes if an error occurs
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        # Close the database connection
+        cursor.close()
+        conn.close()
     # Process the data (e.g., save it to a database)
     # Replace this with your actual processing logic
 

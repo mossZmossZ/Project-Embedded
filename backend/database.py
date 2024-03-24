@@ -35,7 +35,7 @@ return_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d %H:%M:%S')
 # c.execute('''UPDATE Items
 # SET rfid_tags = 131424117
 # WHERE item_id = 1''')
-c.execute('''DELETE FROM Items WHERE rfid_tags = 352383319''')
+c.execute('''DELETE FROM borrow WHERE rfid_tags = 352383319''')
 
 
 conn.commit()
