@@ -292,9 +292,9 @@ async def RETURN_Item(request: ReturnItem):
             cursor.execute("UPDATE Items SET available = 1 WHERE rfid_tags = ?", (item_rfid_tag,))
             conn.commit()
 
-            return {"message": "Item returned successfully"}
+            return {"successfully"}
         else:
-            return {"message": "Item cannot be returned. It is not borrowed by the student."}
+            return {"ERROR"}
     except Exception as e:
         # Rollback changes if an error occurs
         conn.rollback()
