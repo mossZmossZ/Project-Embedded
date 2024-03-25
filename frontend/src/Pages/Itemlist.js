@@ -6,6 +6,7 @@ import { AgGridReact } from "ag-grid-react";
 
 export default function ItemList(){
     const [colDefs, setColDefs] = useState([
+        { field: "ID",flex:2 },
         { field: "Item",flex:2 },
         { field: "Available" },
       ]);
@@ -15,8 +16,9 @@ export default function ItemList(){
       axios.get('http://127.0.0.1:8000/api/itemdata')
           .then(response => {
               const mappedData = response.data.map(item => ({
-                  Item: item[0],
-                  Available: item[1] ===1 ? true :false  
+                ID:item[0],
+                  Item: item[1],
+                  Available: item[2] ===1 ? true :false  
               }));
               setRowData(mappedData);
           })
@@ -27,9 +29,9 @@ export default function ItemList(){
     return(
         <div id = 'dashboard'>
             <Sidebar/>
-            <div  className = 'table'>
-        <h3>ALL Item</h3>
-        <div className="ag-theme-quartz" style={{height: 250, padding:10,width:500 }}>
+            <div  className = 'table m-5'>
+        <h3 className="m-4">ALL Item</h3>
+        <div className="ag-theme-quartz" style={{height: 400,width:1000,fontSize:20 }}>
           <AgGridReact rowData={rowData} columnDefs={colDefs}/>
         </div>
     </div>
