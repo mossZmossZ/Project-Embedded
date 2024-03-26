@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './Pages/App';
-import Sidebar from './Components/Sidebar';
+import Borrowlist from './Pages/BorrowList';
 import { BrowserRouter, Routes,Route} from 'react-router-dom';
 import Register from './Pages/Register';
 import ItemList from './Pages/Itemlist';
@@ -14,6 +14,7 @@ root.render(
       <Route path="/" element={<App />} />
       <Route path="/register" element={<Register />} />
       <Route path="/itemlist" element={<ItemList />} />
+      <Route path="/borrowList" element={<Borrowlist />} />
     </Routes>
   </BrowserRouter>
 );

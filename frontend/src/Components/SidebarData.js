@@ -19,5 +19,11 @@ export const SidebarData = [
         title:"Item List",
         icon:<ListIcon/>,
         link:"/itemlist"
+    },
+    {
+        title:"Borrowed List",
+        icon:<ListIcon/>,
+        link:"/Borrowlist"
+
     }
 ]

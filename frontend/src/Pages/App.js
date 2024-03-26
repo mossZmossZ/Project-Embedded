@@ -38,9 +38,13 @@ function App() {
 
   
   const options = {
-    title: "Equipment Availability",
+    chartArea: {'width': '100%', 'height': '80%'},
     colors:['#008170', '#bf1029'],
-    backgroundColor: '#D3D3D3'
+    backgroundColor: '#D3D3D3',
+    'width': 350,
+    'height': 400,
+    legend: {'position': 'bottom',},
+    fontSize: 18,
   };
     // Column Definitions: Defines the columns to be displayed.
      const [colDefs, setColDefs] = useState([
@@ -53,11 +57,11 @@ function App() {
 
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
-      axios.get('http://127.0.0.1:8000/api/borrow')
+      axios.get('http://127.0.0.1:8000/api/returnToday')
           .then(response => {
               const mappedData = response.data.map(item => ({
                   Item: item[0],
-                  Student: item[1],  // Assuming 'Status' is a placeholder value
+                  Student: item[1],  
                   Borrowed_date: item[2],
                   Return_date: item[3]
               }));
@@ -75,52 +79,47 @@ function App() {
       <Sidebar/>
 
       <div className = 'body'>
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Total Item</h5>
-                <h2>{totalData}</h2>
-              </div>
+      <div className="row">
+        <div class="col-sm-4">
+            <div class="card custom3">
+                <div class="card-body">
+                    <h2 class="card-title">Total Items :</h2>
+                    <h1 class = 'd-flex justify-content-center'>{totalData}</h1>
+                </div>
             </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Available Item</h5>
-                <h2>{unAvaData}</h2>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Available Item</h5>
-                <h2>{avaData}</h2>
-              </div>
-            </div>
-          </div>
         </div>
-        <div  className = 'table'>
-          <div className='head'>
-            <h3>Borrowed Item</h3>
-            <DescriptionIcon id = 'task' />
-          </div>
-        <div className="ag-theme-quartz" style={{height: 250 }}>
-          <AgGridReact rowData={rowData} columnDefs={colDefs}/>
+        <div class="col-sm-4 ">
+            <div class="card custom1 text-white">
+                <div class="card-body">
+                    <h2 class="card-title ">Available Items:</h2>
+                    <h1 class = 'd-flex justify-content-center'>{avaData}</h1>
+                </div>
+            </div>
         </div>
-    </div>
-
-      </div>
-     
-      {/* <Chart
-        chartType="PieChart"
-        data={pieData}
-        options={options}
-        width={"100%"}
-        height={"400px"}
-    /> */}
-
+        <div class="col-sm-4 ">
+            <div class="card text-white custom2 ;">
+                <div class="card-body">
+                    <h2 class="card-title">Unavailable Items:</h2>
+                    <h1 class = 'd-flex justify-content-center'>{unAvaData}</h1>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div className="row">
+          <div className="col-sm-3 me-4 mt-4">
+          
+            <Chart chartType="PieChart" data={pieData} options={options}/>  
+          </div>  
+            <div class="col-sm-8 ps-5 ms-5">
+              <div className='head'class = "ps-5">
+                <h3>Return today Item</h3>
+              </div>
+              <div className="ag-theme-quartz shadow-sm" style={{height: 360 }} >
+                <AgGridReact rowData={rowData} columnDefs={colDefs} />
+              </div>
+            </div>
+        </div>
+      </div> 
     </div>
   </div>
 

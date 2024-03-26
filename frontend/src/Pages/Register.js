@@ -128,7 +128,7 @@ return  (
         <div>
         <form id = "registerform" >
             <div className='registerform'>
-                <h4>Register Item</h4>
+                <h1>Register Item</h1>
                 <label>RFID No:
                     <>   </>
                     <input  readOnly type="Integer"  value={rfid} onChange={handleChangeRfid} />
@@ -146,17 +146,25 @@ return  (
             </div>
            
         </form>
+        <div className='card'>
+            <div className='form-group'>
+                <h1 className='form-title'>Register Item</h1>
+                <div className='input-group mb-5 w-100'>
+                    <label>RFID No:</label>
+                    <input type="Integer" class="form-control pe-5" value={rfid} placeholder="Readonly input here…" onChange={handleChangeRfid} readonly /> 
+                    <Button onClick={handleChangeRfid}>Read</Button>
+                    <Button onClick={handleClearRfid}>Clear</Button>
+                </div>
+                <div className='card-text'>
+                    <label>Item Name:</label>
+                    <input type="text" value={item} onChange={handleChangeItem} />
+                </div>
+                <Button onClick={handleSubmit1} className='submit_button'>Submit</Button>
+            </div>
+        </div>
         <form id = "registerform" onSubmit={handleSubmit2}>
             <div className='registerform'>
-                <h4>Register Student</h4>
-                <label>Student No:
-                    <>   </>
-                    <input  type="Integer"  value={studentNo} onChange={handleChangeStudentNo} />
-                </label> 
-                <label>Student Name:
-                    <>   </>
-                    <input  type="text"  value={studentName} onChange={handleChangeStudentName} />
-                </label>
+                <h1>Register Student</h1>
                 <label>RFID No:
                     <>   </>
                     <input  type="Integer"  value={rfidNo} onChange={handleChangeRfidNo} />
@@ -165,6 +173,15 @@ return  (
                     <>     </>
                     <button  onClick={handleClearRfidNo} >Clear</button>
                 </label> 
+                <label>Student No:
+                    <>   </>
+                    <input  type="Integer"  value={studentNo} onChange={handleChangeStudentNo} />
+                </label> 
+                <label>Student Name:
+                    <>   </>
+                    <input  type="text"  value={studentName} onChange={handleChangeStudentName} />
+                </label>
+                
                <Button type = "submit" className='submit_button'>Submit</Button>
             </div>
            

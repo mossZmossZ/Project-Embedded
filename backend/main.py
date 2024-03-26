@@ -46,7 +46,7 @@ async def root():
 
 @app.get("/api/getTime")
 async def getTime():
-    time_formatted = time_now.strftime("%d-%m-%Y %H:%M:%S")
+    time_formatted = time_now.strftime("%d-%m-%Y")
     return time_formatted
 
 class RFID(BaseModel):
@@ -139,14 +139,38 @@ async def get_borrowed_items():
         raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
     finally:
         cursor.close()
+from datetime import datetime
 
-@app.get("/api/itemdata")
+@app.get("/api/returnToday")
 async def get_borrowed_items():
+    # Get today's date
+    today_date = datetime.now().strftime('%Y-%m-%d')
+
     # Create a connection to the SQLite database
     conn = create_connection("Embedded.db")
     cursor = conn.cursor()
     try:
-        cursor.execute("""SELECT item_name,available
+        cursor.execute("""SELECT items.item_name, students.student_name, borrow.borrowed_date, borrow.return_date
+    FROM borrow
+    JOIN items ON borrow.item_id = items.item_id
+    JOIN students ON borrow.student_id = students.student_id
+    WHERE DATE(borrow.return_date) = ?
+""", (today_date,))
+        rows = cursor.fetchall()
+        return rows
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
+
+
+@app.get("/api/itemdata")
+async def get_data_items():
+    # Create a connection to the SQLite database
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""SELECT item_id,item_name,available
     FROM Items
 """)
         rows = cursor.fetchall()
@@ -223,8 +247,8 @@ async def SEND_Borrow(request: borrow):
     student_rfid_tag = int(request.Student_Rfid_tag)
     item_rfid_tag = int(request.Item_Rfid_tag)
     borrow_date = request.borrow_Date
-    borrowed_date2 = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    return_date = (datetime.now() + timedelta(days=int(borrow_date))).strftime('%Y-%m-%d %H:%M:%S')
+    borrowed_date2 = datetime.now().strftime('%Y-%m-%d')
+    return_date = (datetime.now() + timedelta(days=int(borrow_date))).strftime('%Y-%m-%d')
      
      # Connect to the database
     conn = sqlite3.connect('Embedded.db')
