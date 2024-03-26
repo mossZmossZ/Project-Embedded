@@ -42,10 +42,10 @@ function App() {
   
   const options = {
     chartArea: {'width': '100%', 'height': '80%'},
+    width: '100%',
+    height: '100%',
     colors:['#008170', '#bf1029'],
     backgroundColor: '#D3D3D3',
-    'width': 350,
-    'height': 400,
     legend: {'position': 'bottom',},
     fontSize: 20,
   };
@@ -109,11 +109,11 @@ function App() {
               </div>
           </div>
         </div>
-        <div className="row">
-          <div className="col-sm-3 me-4 mt-4">
-            <Chart chartType="PieChart" data={pieData} options={options}/>  
+        <div className="row custom-row">
+          <div id ="chart_wrap" className="col-sm-3 me-4 mt-4">
+            <Chart id ='chart' chartType="PieChart" data={pieData} options={options}/>  
           </div>  
-            <div class="col-sm-8 ps-5 ms-5">
+            <div  class="col-sm-8 ">
               <div className='head'class = "ps-5">
                 <h3>Return today Item</h3>
               </div>
