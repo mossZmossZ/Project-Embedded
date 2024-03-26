@@ -5,7 +5,6 @@ import { useState,useEffect } from 'react';
 import Sidebar from '../Components/Sidebar.js'
 import "./App.css";
 import axios from 'axios';
-import DescriptionIcon from '@mui/icons-material/Description';
 import { Chart } from "react-google-charts";
 
 
@@ -20,8 +19,9 @@ function App() {
   const totalData = avaData+unAvaData;
   
   useEffect(() => {
+
     const interval = setInterval(()=>
-      axios.get('http://127.0.0.1:8000/api/ava_data')
+      axios.get(`${process.env.REACT_APP_BACKEND_API}/api/ava_data`)
           .then(response => {
               const [availableCount, unavailableCount] = response.data;
               setPieData([
@@ -34,7 +34,7 @@ function App() {
           })
           .catch(error => {
               console.error('Error fetching data: ', error);
-          }),500);
+          }),3000);
           return()=>clearInterval(interval)
   }, []);
 
@@ -46,7 +46,7 @@ function App() {
     'width': 350,
     'height': 400,
     legend: {'position': 'bottom',},
-    fontSize: 18,
+    fontSize: 20,
   };
     // Column Definitions: Defines the columns to be displayed.
      const [colDefs, setColDefs] = useState([
@@ -60,7 +60,7 @@ function App() {
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
       const interval = setInterval(()=>
-      axios.get('http://127.0.0.1:8000/api/returnToday')
+      axios.get(`${process.env.REACT_APP_BACKEND_API}/api/returnToday`)
           .then(response => {
               const mappedData = response.data.map(item => ({
                   Item: item[0],
@@ -72,46 +72,44 @@ function App() {
           })
           .catch(error => {
               console.error('Error fetching data: ', error);
-          }),500);
+          }),3000);
           return()=>clearInterval(interval)
   }, []);
 
  
   return (
-  <div >
+
     <div id = 'dashboard'>
       <Sidebar/>
-
       <div className = 'body'>
-      <div className="row">
-        <div class="col-sm-4">
-            <div class="card custom3">
-                <div class="card-body">
-                    <h2 class="card-title">Total Items :</h2>
-                    <h1 class = 'd-flex justify-content-center'>{totalData}</h1>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-4 ">
-            <div class="card custom1 text-white">
-                <div class="card-body">
-                    <h2 class="card-title ">Available Items:</h2>
-                    <h1 class = 'd-flex justify-content-center'>{avaData}</h1>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-4 ">
-            <div class="card text-white custom2 ;">
-                <div class="card-body">
-                    <h2 class="card-title">Unavailable Items:</h2>
-                    <h1 class = 'd-flex justify-content-center'>{unAvaData}</h1>
-                </div>
-            </div>
-        </div>
+        <div className="row">
+          <div class="col-sm-4">
+              <div class="card custom3">
+                  <div class="card-body">
+                      <h2 class="card-title">Total Items :</h2>
+                      <h1 class = 'd-flex justify-content-center'>{totalData}</h1>
+                  </div>
+              </div>
+          </div>
+          <div class="col-sm-4 ">
+              <div class="card custom1 text-white">
+                  <div class="card-body">
+                      <h2 class="card-title ">Available Items:</h2>
+                      <h1 class = 'd-flex justify-content-center'>{avaData}</h1>
+                  </div>
+              </div>
+          </div>
+          <div class="col-sm-4 ">
+              <div class="card text-white custom2 ;">
+                  <div class="card-body">
+                      <h2 class="card-title">Unavailable Items:</h2>
+                      <h1 class = 'd-flex justify-content-center'>{unAvaData}</h1>
+                  </div>
+              </div>
+          </div>
         </div>
         <div className="row">
           <div className="col-sm-3 me-4 mt-4">
-          
             <Chart chartType="PieChart" data={pieData} options={options}/>  
           </div>  
             <div class="col-sm-8 ps-5 ms-5">
@@ -125,7 +123,6 @@ function App() {
         </div>
       </div> 
     </div>
-  </div>
 
 
   );

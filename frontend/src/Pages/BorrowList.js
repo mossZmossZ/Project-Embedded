@@ -16,7 +16,7 @@ export default function BorrowList(){
 
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
-      axios.get('http://127.0.0.1:8000/api/borrow')
+      axios.get(`${process.env.REACT_APP_BACKEND_API}/api/borrow`)
           .then(response => {
               const mappedData = response.data.map(item => ({
                   Item: item[0],

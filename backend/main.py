@@ -187,6 +187,25 @@ class ItemData(BaseModel):
     rfid: int
     item: str
 
+@app.get("/api/studentsdata")
+async def get_data_items():
+    # Create a connection to the SQLite database
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""SELECT student_id,student_name
+    FROM Students
+""")
+        rows = cursor.fetchall()
+        return rows
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
+
+class ItemData(BaseModel):
+    rfid: int
+    item: str
 @app.post("/api/register")
 async def register_item(item_data: ItemData):
     conn = create_connection("Embedded.db")

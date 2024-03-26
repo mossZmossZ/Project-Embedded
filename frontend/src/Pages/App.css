@@ -6,7 +6,7 @@
 .body{
 display: flex;
 flex-direction: column;
-padding-left: 5vw;
+padding-left: 4vw;
 width: 80%;
 font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
@@ -43,5 +43,8 @@ font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida San
 }
 .custom3{
   background-color:#ee9b00!important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.16), 0 4px 10px rgba(0,0,0,0.23);
+}
+.custom-register{
   box-shadow: 0 4px 10px rgba(0,0,0,0.16), 0 4px 10px rgba(0,0,0,0.23);
 }

@@ -3,23 +3,22 @@ import Sidebar from "../Components/Sidebar";
 import {useState,useEffect} from "react";
 import axios from "axios";
 import { AgGridReact } from "ag-grid-react";
-import "./App.css"
 
-export default function ItemList(){
+export default function Students(){
     const [colDefs, setColDefs] = useState([
-        { field: "ID",flex:2 },
-        { field: "Item",flex:2 },
-        { field: "Available" },
+        { field: "Student_NO",flex :2 },
+        { field: "Name",flex :2},
+        
       ]);
 
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
-      axios.get(`${process.env.REACT_APP_BACKEND_API}/api/itemdata`)
+      axios.get(`${process.env.REACT_APP_BACKEND_API}/api/studentsdata`)
           .then(response => {
+            
               const mappedData = response.data.map(item => ({
-                ID:item[0],
-                  Item: item[1],
-                  Available: item[2] ===1 ? true :false  
+                Student_NO:item[0],
+                  Name: item[1],
               }));
               setRowData(mappedData);
           })
@@ -31,7 +30,7 @@ export default function ItemList(){
         <div id = 'dashboard'>
             <Sidebar/>
             <div  className = 'table m-5'>
-        <h3 className="m-4">ALL Item</h3>
+        <h3 className="m-4">Students</h3>
         <div className="ag-theme-quartz" style={{height: 400,width:1000,fontSize:20 }}>
           <AgGridReact rowData={rowData} columnDefs={colDefs}/>
         </div>
