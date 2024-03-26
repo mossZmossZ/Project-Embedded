@@ -1,7 +1,6 @@
 import {useState} from 'react';
 import Sidebar from '../Components/Sidebar.js';
 import "./Register.css";
-import {Button} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import Swal from 'sweetalert2'
@@ -125,67 +124,48 @@ export default function  Register ()  {
 return  (
     <div id = "dashboard">
         <Sidebar/>
-        <div>
-        <form id = "registerform" >
-            <div className='registerform'>
-                <h1>Register Item</h1>
-                <label>RFID No:
-                    <>   </>
-                    <input  readOnly type="Integer"  value={rfid} onChange={handleChangeRfid} />
-                    <>     </>
-                    <button  onClick={handleChangeRfid} >Read</button>
-                    <>     </>
-                    <button  onClick={handleClearRfid} >Clear</button>
-                </label> 
-                <label>Item Name:
-                    <>   </>
-                    <input  type="text"  value={item} onChange={handleChangeItem} />
-                </label>
-
-               <Button  onClick={handleSubmit1} className='submit_button'>Submit</Button>
-            </div>
-           
-        </form>
-        <div className='card'>
-            <div className='form-group'>
-                <h1 className='form-title'>Register Item</h1>
-                <div className='input-group mb-5 w-100'>
-                    <label>RFID No:</label>
-                    <input type="Integer" class="form-control pe-5" value={rfid} placeholder="Readonly input here…" onChange={handleChangeRfid} readonly /> 
-                    <Button onClick={handleChangeRfid}>Read</Button>
-                    <Button onClick={handleClearRfid}>Clear</Button>
+        <div class='w-50 '>
+            <div class="card mt-4 rounded-4 "style={{marginLeft: 10 + 'em'}} >
+                <div class="card-body">
+                <h1 class="card-title">Register Item</h1>
+                <form>
+                    <div class="form-floating input-group mt-4 mb-3">
+                        
+                        <input type="text" class="form-control"  value={rfid}  placeholder="RFID NO" onChange={handleChangeRfid} disabled readOnly/>
+                        <label >RFID NO :</label> 
+                        <button className='btn btn-outline-success ' onClick={handleChangeRfid} >Read</button>
+                        <button className='btn btn-outline-danger ' onClick={handleClearRfid} >Clear</button>         
+                    </div>
+                    <div class="form-floating mt-4 mb-3">
+                        <input  type="text"  class="form-control" placeholder="Item name" value={item} onChange={handleChangeItem} />
+                        <label >Item Name: </label> 
+                    </div>
+                    <button className='btn btn-primary mb-2 ' onClick={handleSubmit1} >Submit</button>
+                </form>
                 </div>
-                <div className='card-text'>
-                    <label>Item Name:</label>
-                    <input type="text" value={item} onChange={handleChangeItem} />
+            </div>
+            <div class="card mt-4 rounded-4 "style={{marginLeft: 10 + 'em'}} >
+                <div class="card-body ">
+                <h1 class="card-title">Register Student</h1>
+                <form>
+                    <div class="form-floating input-group mt-4 mb-3">
+                        <input type="text" class="form-control "  value={rfidNo}  placeholder="RFID NO" onChange={handleChangeRfidNo} disabled readOnly/>
+                        <label >RFID NO :</label> 
+                        <button className='btn btn-outline-success' onClick={handleChangeRfidNo} >Read</button>
+                        <button className='btn btn-outline-danger' onClick={handleClearRfidNo} >Clear</button>         
+                    </div>
+                    <div class="form-floating mt-4 mb-3">
+                        <input  type="text"  class="form-control" placeholder="Student name"  value={studentName} onChange={handleChangeStudentName} />
+                        <label >Student Name : </label> 
+                    </div>
+                    <div class="form-floating mt-4 mb-3">
+                        <input  type="text"  class="form-control" placeholder="Student no" value={studentNo} onChange={handleChangeStudentNo} />
+                        <label >Student NO : </label> 
+                    </div>
+                    <button class='btn btn-primary' onClick={handleSubmit2}>Submit</button>
+                </form>
                 </div>
-                <Button onClick={handleSubmit1} className='submit_button'>Submit</Button>
             </div>
-        </div>
-        <form id = "registerform" onSubmit={handleSubmit2}>
-            <div className='registerform'>
-                <h1>Register Student</h1>
-                <label>RFID No:
-                    <>   </>
-                    <input  type="Integer"  value={rfidNo} onChange={handleChangeRfidNo} />
-                    <>     </>
-                    <button  onClick={handleChangeRfidNo} >Read</button>
-                    <>     </>
-                    <button  onClick={handleClearRfidNo} >Clear</button>
-                </label> 
-                <label>Student No:
-                    <>   </>
-                    <input  type="Integer"  value={studentNo} onChange={handleChangeStudentNo} />
-                </label> 
-                <label>Student Name:
-                    <>   </>
-                    <input  type="text"  value={studentName} onChange={handleChangeStudentName} />
-                </label>
-                
-               <Button type = "submit" className='submit_button'>Submit</Button>
-            </div>
-           
-        </form>
         </div>
     </div>
 

@@ -18,8 +18,9 @@ function App() {
   const [avaData, setAvaData] = useState();
   const [unAvaData, setUnAvaData] = useState();
   const totalData = avaData+unAvaData;
-
+  
   useEffect(() => {
+    const interval = setInterval(()=>
       axios.get('http://127.0.0.1:8000/api/ava_data')
           .then(response => {
               const [availableCount, unavailableCount] = response.data;
@@ -33,7 +34,8 @@ function App() {
           })
           .catch(error => {
               console.error('Error fetching data: ', error);
-          });
+          }),500);
+          return()=>clearInterval(interval)
   }, []);
 
   
@@ -57,6 +59,7 @@ function App() {
 
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
+      const interval = setInterval(()=>
       axios.get('http://127.0.0.1:8000/api/returnToday')
           .then(response => {
               const mappedData = response.data.map(item => ({
@@ -69,7 +72,8 @@ function App() {
           })
           .catch(error => {
               console.error('Error fetching data: ', error);
-          });
+          }),500);
+          return()=>clearInterval(interval)
   }, []);
 
  

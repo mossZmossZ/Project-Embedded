@@ -5,6 +5,9 @@ from pydantic import BaseModel
 from sqlite3 import Error
 import sqlite3
 from datetime import datetime,timedelta
+import requests
+import os
+from dotenv import load_dotenv
 
 
 time_now = datetime.now()
@@ -240,16 +243,20 @@ class borrow(BaseModel):
     Student_Rfid_tag: str
     Item_Rfid_tag: str
     borrow_Date: str
+    
+LINE_API = "https://notify-api.line.me/api/notify"
+load_dotenv()
+TOKEN = os.getenv("SECRET_KEY")
 
 # Create the endpoint
 @app.post('/api/SEND_Borrow')
 async def SEND_Borrow(request: borrow):
-    student_rfid_tag = int(request.Student_Rfid_tag)
+    student_rfid_tag = request.Student_Rfid_tag
     item_rfid_tag = int(request.Item_Rfid_tag)
-    borrow_date = request.borrow_Date
+    borrow_date = int(request.borrow_Date)
     borrowed_date2 = datetime.now().strftime('%Y-%m-%d')
-    return_date = (datetime.now() + timedelta(days=int(borrow_date))).strftime('%Y-%m-%d')
-     
+    return_date = (datetime.now() + timedelta(days=borrow_date)).strftime('%Y-%m-%d')
+    print(student_rfid_tag)
      # Connect to the database
     conn = sqlite3.connect('Embedded.db')
     cursor = conn.cursor()
@@ -271,7 +278,28 @@ async def SEND_Borrow(request: borrow):
         cursor.execute("UPDATE Items SET available = 0 WHERE rfid_tags = ?", (item_rfid_tag,))
         conn.commit()
         
+
+        cursor.execute("SELECT student_name FROM Students WHERE rfid_tags = ?", (student_rfid_tag,))
+        student_name = cursor.fetchone()[0]
+
+        # Get item_id from Items table
+        cursor.execute("SELECT item_name FROM Items WHERE rfid_tags = ?", (item_rfid_tag,))
+        item_name = cursor.fetchone()[0]
+        
+        
+        message = f"{student_name} ได้ยืม {item_name} มีกำหนดคืนวันที่ {return_date} เหลือเวลาคืนอีก {borrow_date} วัน"
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": f"Bearer {TOKEN}"
+        }
+        payload = {
+            "message": message
+        }
+        response = requests.post(LINE_API, headers=headers, data=payload)
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Failed to send notification")
         return {"successfully"}
+    
     except Exception as e:
         # Rollback changes if an error occurs
         conn.rollback()
@@ -288,8 +316,8 @@ class ReturnItem(BaseModel):
 # Create the endpoint for returning an item
 @app.post('/api/RETURN_Item')
 async def RETURN_Item(request: ReturnItem):
-    student_rfid_tag = int(request.Student_Rfid_tag)
-    item_rfid_tag = int(request.Item_Rfid_tag)
+    student_rfid_tag = request.Student_Rfid_tag
+    item_rfid_tag = request.Item_Rfid_tag
 
     # Connect to the database
     conn = sqlite3.connect('Embedded.db')
@@ -316,7 +344,27 @@ async def RETURN_Item(request: ReturnItem):
             cursor.execute("UPDATE Items SET available = 1 WHERE rfid_tags = ?", (item_rfid_tag,))
             conn.commit()
 
+            cursor.execute("SELECT student_name FROM Students WHERE rfid_tags = ?", (student_rfid_tag,))
+            student_name = cursor.fetchone()[0]
+
+            # Get item_id from Items table
+            cursor.execute("SELECT item_name FROM Items WHERE rfid_tags = ?", (item_rfid_tag,))
+            item_name = cursor.fetchone()[0]
+            
+            
+            message = f"{student_name} ได้คืน {item_name} แล้ว"
+            headers = {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": f"Bearer {TOKEN}"
+            }
+            payload = {
+                "message": message
+            }
+            response = requests.post(LINE_API, headers=headers, data=payload)
+            if response.status_code != 200:
+                raise HTTPException(status_code=500, detail="Failed to send notification")
             return {"successfully"}
+
         else:
             return {"ERROR"}
     except Exception as e:
@@ -327,3 +375,5 @@ async def RETURN_Item(request: ReturnItem):
         # Close the database connection
         cursor.close()
         conn.close()
+
+
