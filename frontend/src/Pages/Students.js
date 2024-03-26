@@ -1,3 +1,4 @@
+/* eslint no-use-before-define: 0 */
 import React from "react";
 import Sidebar from "../Components/Sidebar";
 import {useState,useEffect} from "react";
