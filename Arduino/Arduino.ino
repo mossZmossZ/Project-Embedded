@@ -343,6 +343,7 @@ void loop() {
                   lcd.setCursor(0, 1);
                   lcd.print("Scan Again");
                   memset(nuidPICC, 0, sizeof(nuidPICC));
+                  break;
               }
           }
         }  
@@ -435,7 +436,6 @@ String sendRFIDData(String rfidData) {
             lcd.print("Waiting Data");
             lcd.setCursor(0,1);
             lcd.print("From Server");
-
             bool bodyStarted = false;
             String responseBody = "";
             while (client.connected()) {
@@ -584,7 +584,7 @@ String sendBorrowToServer(String student_rfid, String item_rfid, String borrow_d
             lcd.setCursor(0, 1);
             lcd.print("From Server");
             // Wait for response from the server
-            delay(500); // Wait for 5 seconds
+            delay(3000); // Wait for 5 seconds
             // Check if response is available
             if (client.available()) {
                 // Read the response body
@@ -653,7 +653,7 @@ String sendReturnToServer(String student_rfid, String item_rfid) {
             lcd.setCursor(0, 1);
             lcd.print("From Server");
             // Wait for response from the server
-            delay(500); // Wait for 5 seconds
+            delay(1000); // Wait for 5 seconds
             // Check if response is available
             if (client.available()) {
                 // Read the response body
