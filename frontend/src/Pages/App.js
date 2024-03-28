@@ -61,7 +61,7 @@ function App() {
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
       const interval = setInterval(()=>
-      axios.get(`${process.env.REACT_APP_BACKEND_API}/api/returnToday`)
+      axios.get(`http://45.141.27.250:8000/api/returnToday`)
           .then(response => {
               const mappedData = response.data.map(item => ({
                   Item: item[0],
@@ -70,6 +70,7 @@ function App() {
                   Return_date: item[3]
               }));
               setRowData(mappedData);
+              console.log(mappedData)
           })
           .catch(error => {
               console.error('Error fetching data: ', error);

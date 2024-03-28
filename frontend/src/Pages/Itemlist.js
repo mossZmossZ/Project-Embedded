@@ -15,7 +15,7 @@ export default function ItemList(){
 
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
-      axios.get(`${process.env.REACT_APP_BACKEND_API}/api/itemdata`)
+      axios.get(`http://45.141.27.250:8000/api/itemdata`)
           .then(response => {
               const mappedData = response.data.map(item => ({
                 ID:item[0],
@@ -23,6 +23,7 @@ export default function ItemList(){
                   Available: item[2] ===1 ? true :false  
               }));
               setRowData(mappedData);
+              console.log(mappedData)
           })
           .catch(error => {
               console.error('Error fetching data: ', error);

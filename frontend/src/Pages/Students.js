@@ -14,7 +14,7 @@ export default function Students(){
 
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
-      axios.get(`${process.env.REACT_APP_BACKEND_API}/api/studentsdata`)
+      axios.get(`http://45.141.27.250:8000/api/studentsdata`)
           .then(response => {
             
               const mappedData = response.data.map(item => ({
