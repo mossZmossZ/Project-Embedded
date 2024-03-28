@@ -34,9 +34,9 @@ export default function BorrowList(){
     return(
         <div id = 'dashboard'>
             <Sidebar/>
-            <div  className = 'table m-5'>
+            <div  id = 'custom-table'className = 'table custom-table '>
               <h3 className="m-4">Borrowed Item</h3>
-              <div className="ag-theme-quartz" style={{height: 400,width:1000,fontSize:20 }}>
+              <div className="ag-theme-quartz " style={{height: 400,width:1000,fontSize:20 }}>
                 <AgGridReact rowData={rowData} columnDefs={colDefs}/>
               </div>
             </div>

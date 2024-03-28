@@ -24,7 +24,7 @@ c.execute("""CREATE TABLE IF NOT EXISTS Borrow(
           borrowed_date TIMESTAMP,
           return_date TIMESTAMP
             )""")
-#c.execute("INSERT INTO Students (student_id, student_name, rfid_tags) VALUES (6401012630086, 'Narin Sirinapuk', '0005280984')")
+c.execute("INSERT INTO Students (student_id, student_name, rfid_tags) VALUES (6401012630086, 'Narin Sirinapuk', '0005280984')")
 c.execute("INSERT INTO Items (item_id,item_name, rfid_tags, available) VALUES (4,'Oscilloscope2', '123', 1)")
 borrowed_date = datetime.now().strftime('%Y-%m-%d')
 return_date = (datetime.now() + timedelta(days=0)).strftime('%Y-%m-%d ')

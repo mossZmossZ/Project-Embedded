@@ -30,7 +30,7 @@ export default function Students(){
     return(
         <div id = 'dashboard'>
             <Sidebar/>
-            <div  className = 'table m-5'>
+            <div  className = 'table '>
         <h3 className="m-4">Students</h3>
         <div className="ag-theme-quartz" style={{height: 400,width:1000,fontSize:20 }}>
           <AgGridReact rowData={rowData} columnDefs={colDefs}/>
