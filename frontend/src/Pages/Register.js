@@ -15,7 +15,7 @@ export default function  Register ()  {
     const handleChangeRfid = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.get(`http://45.141.27.250:8000/api/GetRFID`);
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_API}/api/GetRFID`);
             const data = response.data;
             setRfid(data);
         } catch (error) {
@@ -42,7 +42,7 @@ export default function  Register ()  {
     const  handleChangeRfidNo = async (event) => {
 		event.preventDefault();
         try {
-            const response = await axios.get(`http://45.141.27.250:8000/api/GetRFID`);
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_API}/api/GetRFID`);
             const data = response.data;
             setRfidNo(data);
         } catch (error) {
@@ -66,7 +66,7 @@ export default function  Register ()  {
             rfid: rfid
         };
 
-        axios.post(`http://45.141.27.250:8000/api/register`, formData)
+        axios.post(`${process.env.REACT_APP_BACKEND_API}/api/register`, formData)
             .then(response => {
                 console.log('Item registered:', response.data);
             })
@@ -100,7 +100,7 @@ export default function  Register ()  {
             rfidNo: rfidNo
         };
 
-        axios.post(`http://45.141.27.250:8000/api/register2`, formData2)
+        axios.post(`${process.env.REACT_APP_BACKEND_API}/api/register2`, formData2)
             .then(response => {
                 console.log('student registered:', response.data);
             })

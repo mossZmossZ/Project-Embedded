@@ -7,9 +7,9 @@
 #include <Keypad_I2C.h>
 #include <Keypad.h>
 
-const char* ssid = "NATTAVEE_2.4G"; // Change to your WiFi SSID
-const char* password = "PBY02556"; // Change to your WiFi password
-const char* host = "192.168.1.144"; // Change to your FastAPI host address
+const char* ssid = "NattaveeIphone"; // Change to your WiFi SSID
+const char* password = "88888888"; // Change to your WiFi password
+const char* host = "45.141.27.250"; // Change to your FastAPI host address
 const byte ROWS = 4;  
 const byte COLS = 4;  
 char keys[ROWS][COLS] = {

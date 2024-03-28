@@ -15,7 +15,7 @@ export default function ItemList(){
 
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
-      axios.get(`http://45.141.27.250:8000/api/itemdata`)
+      axios.get(`${process.env.REACT_APP_BACKEND_API}/api/itemdata`)
           .then(response => {
               const mappedData = response.data.map(item => ({
                 ID:item[0],
