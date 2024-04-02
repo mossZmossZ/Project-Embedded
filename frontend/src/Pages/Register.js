@@ -16,8 +16,8 @@ export default function  Register ()  {
         event.preventDefault();
         try {
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_API}/api/GetRFID`);
-            const data = response.data;
-            setRfid(data);
+            const data = response.data; // Assuming the response is an object with a 'lastRFID' property
+            setRfid(data.lastRFID);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -39,16 +39,16 @@ export default function  Register ()  {
     const  handleChangeStudentNo = (event) => {
 		setStudentNo(event.target.value);
 	};
-    const  handleChangeRfidNo = async (event) => {
-		event.preventDefault();
+    const handleChangeRfidNo = async (event) => {
+        event.preventDefault();
         try {
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_API}/api/GetRFID`);
-            const data = response.data;
-            setRfidNo(data);
+            const data = response.data; // Assuming the response is an object with a 'lastRFID' property
+            setRfidNo(data.lastRFID);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
-	};
+    };
 
     const handleSubmit1 = (event) => {
         event.preventDefault();

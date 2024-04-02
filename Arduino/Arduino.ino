@@ -116,7 +116,7 @@ void loop() {
         unsigned long startTime = millis(); // Record the start time
             while (true) {
               // Check if 20 seconds have passed
-              if (millis() - startTime > 40000) {
+              if (millis() - startTime > 60000) {
                   // Timeout reached, exit the loop
                   lcd.clear();
                   lcd.print("Timeout reached");
@@ -166,7 +166,7 @@ void loop() {
                   lcd.print(name);
                   lcd.setCursor(0, 1);
                   lcd.print("SetDaytoBorrow");
-                  delay(1000);
+                  delay(4000);
                   String ResultDate = inputdate();
                   String ResultDataSent = sendBorrowToServer(StudentRFID, ItemsRFID,ResultDate);
                   lcd.clear();
@@ -187,7 +187,7 @@ void loop() {
                   unsigned long startTime_ItemsStatus = millis(); // Record the start time
                   while (true) {
                       // Check if 20 seconds have passed
-                      if (millis() - startTime_ItemsStatus > 40000) {
+                      if (millis() - startTime_ItemsStatus > 60000) {
                           // Timeout reached, exit the loop
                           lcd.clear();
                           lcd.print("Timeout reached");
@@ -292,7 +292,7 @@ void loop() {
           unsigned long startTime = millis(); // Record the start time
             while (true) {
               // Check if 20 seconds have passed
-              if (millis() - startTime > 40000) {
+              if (millis() - startTime > 60000) {
                   // Timeout reached, exit the loop
                   lcd.clear();
                   lcd.print("Timeout reached");
@@ -706,7 +706,7 @@ String inputdate() {
   lcd.print("Days");
   while (true) {
     // Check if 20 seconds have passed
-    if (millis() - startTimeinput > 20000) {
+    if (millis() - startTimeinput > 60000) {
       // Timeout reached, exit the loop
       lcd.clear();
       lcd.print("Timeout reached");
