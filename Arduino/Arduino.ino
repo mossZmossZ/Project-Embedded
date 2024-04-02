@@ -2,8 +2,7 @@
 #include <MFRC522.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include <WiFi.h> // Use WiFi.h library for ESP32 or ESP8266
-#include <ArduinoJson.h>
+#include <WiFi.h> 
 #include <Keypad_I2C.h>
 #include <Keypad.h>
 
@@ -34,10 +33,10 @@ bool isItems(String role) {
 bool isunknown(String role){
     return role =="NotFound";
 }
-
 byte nuidPICC[4];
 byte rowPins[ROWS] = {0, 1, 2, 3}; 
 byte colPins[COLS] = {4, 5, 6, 7}; 
+
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 MFRC522 rfid(SS_PIN, RST_PIN); 
@@ -46,7 +45,7 @@ MFRC522::MIFARE_Key key;
 
 Keypad_I2C keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS, I2CADDRKEYPAD, PCF8574 );
 
-String inputdate(); // Function prototype
+String inputdate(); // Function initial
 
 char pressedKeys[4]; // Array to hold pressed keys
 int keyIndex = 0;    // Index to keep track of the position in the array
@@ -68,21 +67,16 @@ void setup() {
     for (byte i = 0; i < 6; i++) {
       key.keyByte[i] = 0xFF;
     }
-    // Attempt to connect to WiFi
     connectWiFi();
 }
 
 void loop() {
-  lcd.setCursor(0, 0); // ไปที่ตัวอักษรที่ 0 แถวที่ 1
+  lcd.setCursor(0, 0); 
   lcd.print("Ready To Scan");
-  // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
   if (!rfid.PICC_IsNewCardPresent())
     return;
-  // Verify if the NUID has been read
   if (!rfid.PICC_ReadCardSerial())
     return;
-
-  // Store NUID into nuidPICC array
   for (byte i = 0; i < 4; i++) {
       nuidPICC[i] = rfid.uid.uidByte[i];
   }
@@ -93,7 +87,7 @@ void loop() {
     Serial.print(F("NUID :"));
     printDec(rfid.uid.uidByte, rfid.uid.size);
     Serial.println();
-    lcd.setCursor(0, 0); // Set cursor to the beginning of first line
+    lcd.setCursor(0, 0); 
     lcd.print("NUID: ");
     printUID();
     delay(500);
@@ -300,12 +294,10 @@ void loop() {
                   lcd.clear();
                   break;
               }
-
               // Wait for RFID card to be scanned and read its serial
               while (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
                 delay(100); // Add a small delay to prevent busy-waiting
               }
-
               // Store NUID into nuidPICC array
               for (byte i = 0; i < 4; i++) {
                   nuidPICC[i] = rfid.uid.uidByte[i];
@@ -361,7 +353,6 @@ void loop() {
     }
     lcd.clear();
   }
-
 void printDec(byte *buffer, byte bufferSize) {
   for (byte i = 0; i < bufferSize; i++) {
     Serial.print(' ');
@@ -391,33 +382,21 @@ void connectWiFi() {
   delay(500);
   lcd.clear();
 }
-
 String prepareRFIDData() {
   String rfidData;
-  // Assuming rfid is your RFID object
-  // Prepare RFID data
   for (int i = 0; i < rfid.uid.size; i++) {
     rfidData += rfid.uid.uidByte[i];
   }
   return rfidData;
 }
-
 String sendRFIDData(String rfidData) {
-    String result = ""; // Initialize result variable
-
-    // Send the RFID data to the FastAPI endpoint
+    String result = "";
     if (WiFi.status() == WL_CONNECTED) {
         WiFiClient client;
         if (client.connect(host, 8000)) {
             Serial.println("Connected to server");
-
-            // Construct the JSON payload
             String payload = "{\"rfid_id\":\"" + rfidData + "\"}";
-
-            // Print the data before sending
             Serial.println(payload);
-
-            // Construct the HTTP request
             String httpRequest = "POST /api/SentRFID HTTP/1.1\r\n";
             httpRequest += "Host: ";
             httpRequest += host;
@@ -427,7 +406,6 @@ String sendRFIDData(String rfidData) {
             httpRequest += String(payload.length());
             httpRequest += "\r\n\r\n";
             httpRequest += payload;
-
             // Send the HTTP request
             client.print(httpRequest);
             Serial.println("Data sent to server");
@@ -448,18 +426,14 @@ String sendRFIDData(String rfidData) {
                     }
                 }
             }
-
             // Extract the fields from the response
             int commaIndex = responseBody.indexOf(',');
             String name = responseBody.substring(0, commaIndex-1); // Extract the first value between quotes
             String role = responseBody.substring(commaIndex + 2, responseBody.length() - 2); // Extract the second value between quotes
-
             lcd.clear();
             Serial.println("Response received");
-
             // Combine name and role into a single string, separated by a comma
             result = name + "," + role;
-
             client.stop(); // Close the connection
         } else {
             lcd.clear();
@@ -741,10 +715,3 @@ String inputdate() {
     }
   }
 }
-
-
-
-
-
-
-
