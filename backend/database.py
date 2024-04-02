@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime, timedelta
 
-conn = sqlite3.connect('./backend/Embedded.db')
+conn = sqlite3.connect('Embedded.db')
 c = conn.cursor()
 
 c.execute("""CREATE TABLE IF NOT EXISTS Students(
