@@ -78,9 +78,17 @@ async def read_rfid(request: RFID):
             name_items = item_result[0]
             return name_items,"Items"
         else:
-            global lastRFID
-            lastRFID = rfid_id 
+            cursor.execute("SELECT COUNT(*) FROM buffer")
+            count = cursor.fetchone()[0]
+            if count == 0:
+            # Insert a new row with the RFID tag
+                cursor.execute("INSERT INTO buffer (last_rfid) VALUES (?)", (rfid_id,))
+            else:
+            # Update the existing row with the RFID tag
+                cursor.execute("UPDATE buffer SET last_rfid = ? WHERE id = 1", (rfid_id,))
+            conn.commit()
             return "NotFound","NotFound"
+        
     except Error as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
     finally:
@@ -119,10 +127,21 @@ async def read_rfid(request: RFID):
     
 @app.get("/api/GetRFID")
 async def get_rfid():
-    global lastRFID
-    if lastRFID is None:
-        raise HTTPException(status_code=404, detail="No RFID data has been posted yet")
-    return int(lastRFID)
+    conn = create_connection("Embedded.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT last_rfid FROM buffer ORDER BY id DESC LIMIT 1")
+        last_rfid_result = cursor.fetchone()
+        if last_rfid_result is None:
+            raise HTTPException(status_code=404, detail="No RFID data has been posted yet")
+        last_rfid = last_rfid_result[0]
+        return {"lastRFID": last_rfid}
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
 
     
 @app.get("/api/borrow")

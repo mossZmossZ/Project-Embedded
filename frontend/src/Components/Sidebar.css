@@ -1,6 +1,8 @@
 
 .Sidebar{
-    height: 100vh;
+    min-height: 100vh;
+    max-height: auto;
+    overflow-y: auto;
     width: 17%;
     background-color: #2f4050;
     display: flex;
@@ -46,7 +48,7 @@
 .row #title{
     flex: 70%;
 }
-@media (max-width: 500px) {
+@media (max-width: 600px) {
     #title {
       display: none;
     }
@@ -72,15 +74,15 @@
         height: auto!important;
         margin-left: 1vw!important;
     }
-    .card h1{
-        font-size: medium;
-    }
     .card .form-floating{
-        margin: 0!important;
+        margin:3px !important;
         
     }
     .row .card{
         width: 70vw!important;
+    }
+    .row .card-title{
+        font-size: large;
     }
     .col-sm-8{
         padding-left: 0!important;
